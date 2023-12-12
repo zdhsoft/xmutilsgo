@@ -118,3 +118,14 @@ func RandomIntScope(minValue int, maxValue int) int {
 	}
 	return rand.Intn(maxValue-minValue+1) + minValue
 }
+
+// 64位整数，十进制反转
+func ReverseInt64(paramValue int64) int64 {
+	var result int64
+	num := paramValue
+	for num != 0 {
+		result = result*10 + num%10
+		num /= 10
+	}
+	return result
+}

@@ -12,6 +12,18 @@ func TestInt(t *testing.T) {
 	}
 }
 
+func TestIntSwap(t *testing.T) {
+	list := []int64{1, 12, 123, 1234, 12345, 123456, 1234567, 12345678, 123456789, -12, -942}
+	dest := []int64{1, 21, 321, 4321, 54321, 654321, 7654321, 87654321, 987654321, -21, -249}
+	for idx, item := range list {
+		newValue := ReverseInt64(item)
+		destValue := dest[idx]
+		if newValue != destValue {
+			t.Errorf("ReverseInt64(%d)=%d != %d", item, newValue, destValue)
+		}
+	}
+}
+
 func TestSet(t *testing.T) {
 	s := NewSet[int]()
 	s.Add(1, 2, 3, 4, 5)
