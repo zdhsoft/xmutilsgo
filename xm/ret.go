@@ -9,11 +9,15 @@ const (
 	ERR_FAIL = 1
 )
 
+type BaseRet struct {
+	ret int
+	msg string
+}
+
 // CommonRet 通用返回结构
 // ret = 0 的时候，表示成功，其他值表示失败
 type CommonRet[T any] struct {
-	ret  int
-	msg  string
+	BaseRet
 	data *T
 }
 
@@ -96,6 +100,11 @@ func (r *CommonRet[T]) SetData(paramData *T) *CommonRet[T] {
 	return r
 }
 
+// 实现error接口
+func (r *CommonRet[T]) Error() string {
+	return r.msg
+}
+
 // GetData 取返回数据
 func (r *CommonRet[T]) GetData() *T {
 	return r.data
@@ -134,8 +143,98 @@ func (r *CommonRet[T]) ToRetNoData() *CommonRet[int] {
 	return rrr
 }
 
+// ToBaseRet
+func (r *CommonRet[T]) ToBaseRet() *BaseRet {
+	rrr := &BaseRet{
+		ret: r.ret,
+		msg: r.msg,
+	}
+	return rrr
+}
+
 // AssignErrorFrom 复制错误信息
 func (r *CommonRet[T]) AssignErrorFrom(paramR IRet) *CommonRet[T] {
+	r.ret = paramR.GetRet()
+	r.msg = paramR.GetMsg()
+	return r
+}
+
+// SetRet 设置返回码
+func (r *BaseRet) SetRet(paramRet int) *BaseRet {
+	r.ret = paramRet
+	return r
+}
+
+// GetRet 取返回码
+func (r *BaseRet) GetRet() int {
+	return r.ret
+}
+
+// GetRetStr 取返回码字符串值
+func (r *BaseRet) GetRetStr() string {
+	return strconv.Itoa(r.ret)
+}
+
+// SetMsg 设置错误信息
+func (r *BaseRet) SetMsg(paramMsg string) *BaseRet {
+	r.msg = paramMsg
+	return r
+}
+
+// GetMsg 取错误信息
+func (r *BaseRet) GetMsg() string {
+	return r.msg
+}
+
+// SetError 设置错误
+func (r *BaseRet) SetError(paramRet int, paramMsg string) *BaseRet {
+	r.ret = paramRet
+	r.msg = paramMsg
+	return r
+}
+
+// GetError 取Error信息
+func (r *BaseRet) GetError() (int, string) {
+	return r.ret, r.msg
+}
+
+// SetOK 设置成功
+func (r *BaseRet) SetOK() *BaseRet {
+	r.ret = ERR_OK
+	r.msg = ""
+	return r
+}
+
+// 实现error接口
+func (r *BaseRet) Error() string {
+	return r.msg
+}
+
+// IsOK 判断是否成功
+func (r *BaseRet) IsOK() bool {
+	return r.ret == ERR_OK
+}
+
+// IsNotOK 判断是否成功
+func (r *BaseRet) IsNotOK() bool {
+	return !r.IsOK()
+}
+
+// Reset 重置数据
+func (r *BaseRet) Reset() {
+	r.ret = ERR_OK
+	r.msg = ""
+}
+
+// AssignFrom 从另一个ret赋值
+func (r *BaseRet) AssignFrom(paramR *BaseRet) *BaseRet {
+	r.ret = paramR.ret
+	r.msg = paramR.msg
+	return r
+}
+
+// AssignErrorFrom 复制错误信息
+func (r *BaseRet) AssignErrorFrom(paramR IRet) *BaseRet {
 	r.ret = paramR.GetRet()
 	r.msg = paramR.GetMsg()
 	return r

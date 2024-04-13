@@ -1,6 +1,7 @@
 package xm
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 )
@@ -28,6 +29,15 @@ type Integer interface {
 func Int2String[T SignedInteger](paramValue T) string {
 	v := int64(paramValue)
 	return strconv.FormatInt(v, 10)
+}
+
+/*
+简化整数转字符串
+  - paramValue 要变成字符串的整数
+  - return string
+*/
+func I[T SignedInteger](paramValue T) string {
+	return Int2String(paramValue)
 }
 
 /*
@@ -68,6 +78,16 @@ func Int2StringBasePad[T SignedInteger](paramValue T, paramBase int, paramMinLen
   - return string
 */
 func UInt2String[T UnsignedInterger](paramValue T) string {
+	v := int64(paramValue)
+	return strconv.FormatInt(v, 10)
+}
+
+/*
+简化版无符号整数转十进制字符串
+  - paramValue 要变成字符串的整数
+  - return string
+*/
+func U[T UnsignedInterger](paramValue T) string {
 	v := int64(paramValue)
 	return strconv.FormatInt(v, 10)
 }
@@ -128,4 +148,32 @@ func ReverseInt64(paramValue int64) int64 {
 		num /= 10
 	}
 	return result
+}
+
+// 随机一个数组中的一个元素
+func RandOneInArray[T any](arr []T) (*T, error) {
+	cnt := len(arr)
+	if cnt == 0 {
+		err := errors.New("array is empty")
+		return nil, err
+	} else if cnt == 1 {
+		return &arr[0], nil
+	} else {
+		idx := RandomIntScope(0, cnt-1)
+		return &arr[idx], nil
+	}
+}
+
+// 用现有的数组生成一个新的随机数组
+func RandNewByArray[T any](arr []T) []T {
+	cnt := len(arr)
+	retArr := append([]T{}, arr...)
+	last := cnt - 1
+	for i := 0; i < last; i++ {
+		idx := RandomIntScope(i, last)
+		if idx != i {
+			retArr[i], retArr[idx] = retArr[idx], retArr[i]
+		}
+	}
+	return retArr
 }
