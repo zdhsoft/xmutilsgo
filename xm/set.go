@@ -64,11 +64,7 @@ func (s *Set[T]) All() []T {
 }
 
 // 取交集
-func (s *Set[T]) And(other *Set[T]) Set[T] {
-	if other == nil {
-		return *s
-	}
-
+func (s *Set[T]) And(other Set[T]) Set[T] {
 	needLen := s.Len()
 	olen := other.Len()
 	if olen > needLen {
@@ -85,11 +81,7 @@ func (s *Set[T]) And(other *Set[T]) Set[T] {
 }
 
 // 取并集
-func (s *Set[T]) Or(other *Set[T]) Set[T] {
-	if other == nil {
-		return *s
-	}
-
+func (s *Set[T]) Or(other Set[T]) Set[T] {
 	needLen := s.Len() + other.Len()
 	resultSet := NewSetByCap[T](needLen)
 
@@ -104,10 +96,7 @@ func (s *Set[T]) Or(other *Set[T]) Set[T] {
 }
 
 // 取差集
-func (s *Set[T]) Diff(other *Set[T]) Set[T] {
-	if other == nil {
-		return *s
-	}
+func (s *Set[T]) Diff(other Set[T]) Set[T] {
 	resultSet := NewSetByCap[T](s.Len() + other.Len())
 	for i := range s.m {
 		if !other.Has(i) {
@@ -123,12 +112,8 @@ func (s *Set[T]) Diff(other *Set[T]) Set[T] {
 }
 
 // 其他集合元素没有在本集合中的
-func (s *Set[T]) NotInBySet(other *Set[T]) []T {
-	list := []T{}
-	if other == nil {
-		return list
-	}
-	list = make([]T, 0, other.Len())
+func (s *Set[T]) NotInBySet(other Set[T]) []T {
+	list := make([]T, 0, other.Len())
 	for i := range other.m {
 		if !s.Has(i) {
 			list = append(list, i)
@@ -138,14 +123,11 @@ func (s *Set[T]) NotInBySet(other *Set[T]) []T {
 }
 
 // 其他数组元素没有在本集合中的
-func (s *Set[T]) NotInByArray(other *[]T) []T {
-	list := []T{}
-	if other == nil {
-		return list
-	}
-	list = make([]T, 0, len(*other))
-	for _, i := range *other {
-		if !s.Has(i) {
+func (s *Set[T]) NotInByArray(other []T) []T {
+	OtherSet := NewSetBySlice(other)
+	list := make([]T, 0, len(other))
+	for i := range s.m {
+		if !OtherSet.Has(i) {
 			list = append(list, i)
 		}
 	}
@@ -153,13 +135,13 @@ func (s *Set[T]) NotInByArray(other *[]T) []T {
 }
 
 // 其他数组元素没有在本集合中的
-func (s *Set[T]) InByArray(other *[]T) []T {
+func (s *Set[T]) InByArray(other []T) []T {
 	list := []T{}
 	if other == nil {
 		return list
 	}
-	list = make([]T, 0, len(*other))
-	for _, i := range *other {
+	list = make([]T, 0, len(other))
+	for _, i := range other {
 		if s.Has(i) {
 			list = append(list, i)
 		}
@@ -177,10 +159,31 @@ func NewSetByCap[T comparable](paramCaption int) Set[T] {
 }
 
 // 默认创建
-func NewSet[T comparable]() Set[T] {
+func NewSet[T comparable](paramList ...T) Set[T] {
 	m := make(map[T]struct{})
+	for _, v := range paramList {
+		m[v] = struct{}{}
+	}
 	s := Set[T]{
 		m: m,
 	}
 	return s
+}
+
+// 通过切片创建集合
+func NewSetBySlice[T comparable](paramSlice []T) Set[T] {
+	m := make(map[T]struct{}, len(paramSlice))
+	for _, v := range paramSlice {
+		m[v] = struct{}{}
+	}
+	s := Set[T]{
+		m: m,
+	}
+	return s
+}
+
+// 去重
+func Deduplicate[T comparable](paramList []T) []T {
+	set := NewSetBySlice(paramList)
+	return set.All()
 }

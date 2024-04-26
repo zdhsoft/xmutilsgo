@@ -67,9 +67,9 @@ func (p *PageInfo) CalcLimit() int {
 }
 
 // 根据记录数和页的大小 计算最大页数 paramPageSize <= 0时 计算失败
-func CalcMaxPage(paramCount int, paramPageSize int) *CommonRet[int] {
-	r := CommonRet[int]{}
-
+func CalcMaxPage(paramCount int, paramPageSize int) (*BaseRet, int) {
+	r := BaseRet{}
+	pageCnt := int(0)
 	for range [1]int{} {
 		if paramPageSize <= 0 {
 			r.SetError(ERR_FAIL, fmt.Sprintf("paramPageSize = %d <= 0,  页数要是大于0的整数", paramPageSize))
@@ -80,11 +80,10 @@ func CalcMaxPage(paramCount int, paramPageSize int) *CommonRet[int] {
 			break
 		}
 		p := paramCount % paramPageSize
-		pageCnt := (paramCount - p) / paramPageSize
+		pageCnt = (paramCount - p) / paramPageSize
 		if p > 0 {
 			pageCnt++
 		}
-		r.SetOK(&pageCnt)
 	}
-	return &r
+	return &r, pageCnt
 }
