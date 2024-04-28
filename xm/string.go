@@ -47,12 +47,12 @@ func Trim(paramStr string) string {
   - 示例: [原:/api?aaaa=bbb] [新域名:http://www.google.com]=> http://www.google.com/api?aaaa=bbb
   - 示例: [原:https://www.com.cn/api?name=999&c=测试] [新域名:https://www.google.com]=> https://www.google.com/api?name=999&c=测试
 */
-func ReplaceDomain(oldURL string, newDomain string) string {
-	u, err := url.Parse(oldURL)
+func ReplaceDomain(paramOldURL string, paramNewDomain string) string {
+	u, err := url.Parse(paramOldURL)
 	if err != nil {
 		return ""
 	}
-	h, err1 := url.Parse(newDomain)
+	h, err1 := url.Parse(paramNewDomain)
 	if err1 != nil {
 		return ""
 	}
@@ -61,7 +61,22 @@ func ReplaceDomain(oldURL string, newDomain string) string {
 		u.Host = h.Host
 	} else {
 		u.Scheme = "https"
-		u.Host = newDomain
+		u.Host = paramNewDomain
 	}
 	return u.String()
+}
+
+// 字符串截取
+// 当字符串超过指定的长度，则截取指定的长度(中文算一个字符)
+func TruncateString(paramValue string, paramMaxLen int) string {
+	if len(paramValue) > paramMaxLen {
+		runes := []rune(paramValue)
+		runesCnt := len(runes)
+		if runesCnt > paramMaxLen {
+			return string(runes[:paramMaxLen])
+		} else {
+			return paramValue
+		}
+	}
+	return paramValue
 }

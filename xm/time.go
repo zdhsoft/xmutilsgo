@@ -42,21 +42,22 @@ func init() {
 	beijingLoc, _ = time.LoadLocation("Asia/Shanghai")
 }
 
-func GetDateTime(date string) (int64, int64) {
-	//获取当前时区
-	loc, _ := time.LoadLocation("Local")
+// //取指定
+// func GetDateTime(paramDate string) (int64, int64) {
+// 	//获取当前时区
+// 	loc, _ := time.LoadLocation("Local")
 
-	//日期当天0点时间戳(拼接字符串)
-	startDate := date + "_00:00:00"
-	startTime, _ := time.ParseInLocation("2006-01-02_15:04:05", startDate, loc)
+// 	//日期当天0点时间戳(拼接字符串)
+// 	startDate := paramDate + "_00:00:00"
+// 	startTime, _ := time.ParseInLocation("2006-01-02_15:04:05", startDate, loc)
 
-	//日期当天23时59分时间戳
-	endDate := date + "_23:59:59"
-	endTime, _ := time.ParseInLocation("2006-01-02_15:04:05", endDate, loc)
+// 	//日期当天23时59分时间戳
+// 	endDate := paramDate + "_23:59:59"
+// 	endTime, _ := time.ParseInLocation("2006-01-02_15:04:05", endDate, loc)
 
-	//返回当天0点和23点59分的时间戳
-	return startTime.Unix(), endTime.Unix()
-}
+// 	//返回当天0点和23点59分的时间戳
+// 	return startTime.Unix(), endTime.Unix()
+// }
 
 // 日期时间
 type TDateTime struct {
@@ -153,8 +154,8 @@ func MakeBeijingDateTime() *TDateTime {
 	return st.SelfToBeijing()
 }
 
-func DateTimeFromMillis(millis int64) *TDateTime {
-	st := TDateTime{dt_timestamp: millis, dt_type: DT_TYPE_UTC}
+func DateTimeFromMillis(paramMillis int64) *TDateTime {
+	st := TDateTime{dt_timestamp: paramMillis, dt_type: DT_TYPE_UTC}
 	return &st
 }
 
@@ -180,17 +181,17 @@ func GetNowSecond() int64 {
 }
 
 // 解析北京格式的日期 单位毫秒
-func ParseDateTimeForBeijingMillis(date string) (int64, error) {
+func ParseDateTimeForBeijingMillis(paramDate string) (int64, error) {
 	//获取北京时区
 	//时区定义参考： https://jp.cybozu.help/general/zh/admin/list_systemadmin/list_localization/timezone.html
 	loc, _ := time.LoadLocation("Asia/Shanghai")
-	startTime, err := time.ParseInLocation("2006-1-2", date, loc)
+	startTime, err := time.ParseInLocation("2006-1-2", paramDate, loc)
 	return startTime.UnixMilli(), err
 }
 
 // 解析北京格式的日期 单位秒
-func ParseDateTimeForBeijingSecond(date string) (int64, error) {
-	stNow, err := ParseDateTimeForBeijingMillis(date)
+func ParseDateTimeForBeijingSecond(paramDate string) (int64, error) {
+	stNow, err := ParseDateTimeForBeijingMillis(paramDate)
 	stNow = (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
 	return stNow, err
 }
@@ -202,73 +203,73 @@ func Timestamp2BeijingDate(paramTimestamp int64) string {
 }
 
 // 将时间转换为北京时区的格式字符串
-func BeijingFormat(t time.Time, format string) string {
-	return t.In(beijingLoc).Format(format)
+func BeijingFormat(paramDateTime time.Time, paramFormat string) string {
+	return paramDateTime.In(beijingLoc).Format(paramFormat)
 }
 
 // 将时间转换为北京时区的日期字符串
-func BeijingDateString(t time.Time) string {
-	return BeijingFormat(t, "2006-01-02")
+func BeijingDateString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "2006-01-02")
 }
 
 // 将时间转换为北京时区的日期时间字符串
-func BeijingDateTimeString(t time.Time) string {
-	return BeijingFormat(t, "2006-01-02 15:04:05")
+func BeijingDateTimeString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "2006-01-02 15:04:05")
 }
 
 // 将时间转换为北京时区的时间字符串
-func BeijingTimeString(t time.Time) string {
-	return BeijingFormat(t, "15:04:05")
+func BeijingTimeString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "15:04:05")
 }
 
 // 将时间转换为北京时区的日期字符串(压缩版)
-func BeijingCompactDateString(t time.Time) string {
-	return BeijingFormat(t, "20060102")
+func BeijingCompactDateString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "20060102")
 }
 
 // 将时间转换为北京时区的日期时间字符串(压缩版)
-func BeijingCompactDateTimeString(t time.Time) string {
-	return BeijingFormat(t, "20060102150405")
+func BeijingCompactDateTimeString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "20060102150405")
 }
 
 // 将时间转换为北京时区的时间字符串(压缩版)
-func BeijingCompactTimeString(t time.Time) string {
-	return BeijingFormat(t, "150405")
+func BeijingCompactTimeString(paramDateTime time.Time) string {
+	return BeijingFormat(paramDateTime, "150405")
 }
 
 // 获取指定时间根据天数计算后得到的时间
-func GetTimeOperationDayString(t time.Time, day int) string {
-	t = t.AddDate(0, 0, day)
-	return BeijingFormat(t, "20060102")
+func GetTimeOperationDayString(paramDateTime time.Time, paramDays int) string {
+	paramDateTime = paramDateTime.AddDate(0, 0, paramDays)
+	return BeijingFormat(paramDateTime, "20060102")
 }
 
 // 计算两个时间戳对应的北京时间相差的天数，单位毫秒
-func DiffDaysFromTimestamp(t1 int64, t2 int64) int64 {
-	dt1 := DateTimeFromMillis(t1).ToBeijingZeroTime()
-	dt2 := DateTimeFromMillis(t2).ToBeijingZeroTime()
+func DiffDaysFromTimestamp(paramT1 int64, paramT2 int64) int64 {
+	dt1 := DateTimeFromMillis(paramT1).ToBeijingZeroTime()
+	dt2 := DateTimeFromMillis(paramT2).ToBeijingZeroTime()
 	return (dt1.GetMillis() - dt2.GetMillis()) / MILLIS_BY_DAY
 }
 
 // 计算两个时间戳对应的北京时间相差的天数，单位秒
-func DiffDaysFromTimestampSecond(t1 int64, t2 int64) int64 {
-	return DiffDaysFromTimestamp(t1*MILLIS_BY_SECOND, t2*MILLIS_BY_SECOND)
+func DiffDaysFromTimestampSecond(paramT1 int64, paramT2 int64) int64 {
+	return DiffDaysFromTimestamp(paramT1*MILLIS_BY_SECOND, paramT2*MILLIS_BY_SECOND)
 }
 
 // 计算两个time.Time对应的北京时间相差的天数
-func DiffDaysFromTime(t1 time.Time, t2 time.Time) int64 {
-	return DiffDaysFromTimestamp(t1.UnixMilli(), t2.UnixMilli())
+func DiffDaysFromTime(paramT1 time.Time, paramT2 time.Time) int64 {
+	return DiffDaysFromTimestamp(paramT1.UnixMilli(), paramT2.UnixMilli())
 }
 
-func IsSameDayFromTime(t1 time.Time, t2 time.Time) bool {
-	return DiffDaysFromTime(t1, t2) == 0
+func IsSameDayFromTime(paramT1 time.Time, paramT2 time.Time) bool {
+	return DiffDaysFromTime(paramT1, paramT2) == 0
 }
 
-func IsSameDayFromTimestamp(t1 int64, t2 int64) bool {
-	return DiffDaysFromTimestamp(t1, t2) == 0
+func IsSameDayFromTimestamp(paramT1 int64, paramT2 int64) bool {
+	return DiffDaysFromTimestamp(paramT1, paramT2) == 0
 }
 
-func IsSameDayFromTimestampSecond(t1 int64, t2 int64) bool {
-	return DiffDaysFromTimestampSecond(t1, t2) == 0
+func IsSameDayFromTimestampSecond(paramT1 int64, paramT2 int64) bool {
+	return DiffDaysFromTimestampSecond(paramT1, paramT2) == 0
 }
 
 // 时间戳转为time.Time 时间戳单位秒

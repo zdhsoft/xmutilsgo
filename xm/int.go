@@ -78,8 +78,8 @@ func Int2StringBasePad[T SignedInteger](paramValue T, paramBase int, paramMinLen
   - return string
 */
 func UInt2String[T UnsignedInterger](paramValue T) string {
-	v := int64(paramValue)
-	return strconv.FormatInt(v, 10)
+	v := uint64(paramValue)
+	return strconv.FormatUint(v, 10)
 }
 
 /*
@@ -88,8 +88,8 @@ func UInt2String[T UnsignedInterger](paramValue T) string {
   - return string
 */
 func U[T UnsignedInterger](paramValue T) string {
-	v := int64(paramValue)
-	return strconv.FormatInt(v, 10)
+	v := uint64(paramValue)
+	return strconv.FormatUint(v, 10)
 }
 
 /*
@@ -109,8 +109,8 @@ func UInt2StringPad[T UnsignedInterger](paramValue T, paramMinLen int) string {
   - return string
 */
 func UInt2StringBase[T UnsignedInterger](paramValue T, paramBase int) string {
-	v := int64(paramValue)
-	return strconv.FormatInt(v, paramBase)
+	v := uint64(paramValue)
+	return strconv.FormatUint(v, paramBase)
 }
 
 /*
@@ -125,20 +125,19 @@ func UInt2StringBasePad[T UnsignedInterger](paramValue T, paramBase int, paramMi
 }
 
 /*
-随机一个[minValue, maxValue]之间的整数
-  - minValue 最小值
-  - maxValue 最大值
+随机一个[paramMinValue, paramMaxValue]之间的整数
+  - paramMinValue 最小值
+  - paramMaxValue 最大值
   - return int 随机值
 */
-func RandomIntScope(minValue int, maxValue int) int {
-	if minValue > maxValue {
-		minValue, maxValue = maxValue, minValue
-	} else if minValue == maxValue {
-		return minValue
+func RandomIntScope(paramMinValue int, paramMaxValue int) int {
+	if paramMinValue > paramMaxValue {
+		paramMinValue, paramMaxValue = paramMaxValue, paramMinValue
+	} else if paramMinValue == paramMaxValue {
+		return paramMinValue
 	}
-	return rand.Intn(maxValue-minValue+1) + minValue
+	return rand.Intn(paramMaxValue-paramMinValue+1) + paramMinValue
 }
-
 
 // 64位整数，十进制反转
 func ReverseInt64(paramValue int64) int64 {
@@ -152,23 +151,23 @@ func ReverseInt64(paramValue int64) int64 {
 }
 
 // 随机一个数组中的一个元素
-func RandOneInArray[T any](arr []T) (*T, error) {
-	cnt := len(arr)
+func RandOneInArray[T any](paramArray []T) (*T, error) {
+	cnt := len(paramArray)
 	if cnt == 0 {
 		err := errors.New("array is empty")
 		return nil, err
 	} else if cnt == 1 {
-		return &arr[0], nil
+		return &paramArray[0], nil
 	} else {
 		idx := RandomIntScope(0, cnt-1)
-		return &arr[idx], nil
+		return &paramArray[idx], nil
 	}
 }
 
 // 用现有的数组生成一个新的随机数组
-func RandNewByArray[T any](arr []T) []T {
-	cnt := len(arr)
-	retArr := append([]T{}, arr...)
+func RandNewByArray[T any](paramArray []T) []T {
+	cnt := len(paramArray)
+	retArr := append([]T{}, paramArray...)
 	last := cnt - 1
 	for i := 0; i < last; i++ {
 		idx := RandomIntScope(i, last)

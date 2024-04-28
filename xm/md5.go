@@ -18,7 +18,7 @@ func IsMD5Format(paramValue string) bool {
 }
 
 // 生成MD5字符串
-func EasyMD5(args ...string) string {
-	data := []byte(StringCat(args...))
+func EasyMD5(paramArgs ...string) string {
+	data := []byte(StringCat(paramArgs...))
 	return fmt.Sprintf("%x", md5.Sum(data))
 }

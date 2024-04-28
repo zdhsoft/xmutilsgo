@@ -6,36 +6,36 @@ type Set[T comparable] struct {
 }
 
 // 增加一个或多个元素
-func (s *Set[T]) Add(k ...T) {
-	for _, v := range k {
+func (s *Set[T]) Add(paramElement ...T) {
+	for _, v := range paramElement {
 		s.m[v] = struct{}{}
 	}
 }
 
 // 增加一个数组的元素
-func (s *Set[T]) AddFromArray(k []T) {
-	for _, v := range k {
+func (s *Set[T]) AddFromArray(paramElementArray []T) {
+	for _, v := range paramElementArray {
 		s.m[v] = struct{}{}
 	}
 }
 
 // 删除一个元素或多个元素
-func (s *Set[T]) Remove(k ...T) {
-	for _, v := range k {
+func (s *Set[T]) Remove(paramElement ...T) {
+	for _, v := range paramElement {
 		delete(s.m, v)
 	}
 }
 
 // 删除一个数组的元素
-func (s *Set[T]) RemoveFromArray(k []T) {
-	for _, v := range k {
+func (s *Set[T]) RemoveFromArray(paramElementArray []T) {
+	for _, v := range paramElementArray {
 		delete(s.m, v)
 	}
 }
 
 // 判断元素是否存在
-func (s *Set[T]) Has(k T) bool {
-	_, ok := s.m[k]
+func (s *Set[T]) Has(paramElement T) bool {
+	_, ok := s.m[paramElement]
 	return ok
 }
 
@@ -64,16 +64,16 @@ func (s *Set[T]) All() []T {
 }
 
 // 取交集
-func (s *Set[T]) And(other Set[T]) Set[T] {
+func (s *Set[T]) And(paramOther Set[T]) Set[T] {
 	needLen := s.Len()
-	olen := other.Len()
+	olen := paramOther.Len()
 	if olen > needLen {
 		needLen = olen
 	}
 	resultSet := NewSetByCap[T](needLen)
 
 	for i := range s.m {
-		if other.Has(i) {
+		if paramOther.Has(i) {
 			resultSet.Add(i)
 		}
 	}
@@ -81,29 +81,29 @@ func (s *Set[T]) And(other Set[T]) Set[T] {
 }
 
 // 取并集
-func (s *Set[T]) Or(other Set[T]) Set[T] {
-	needLen := s.Len() + other.Len()
+func (s *Set[T]) Or(paramOther Set[T]) Set[T] {
+	needLen := s.Len() + paramOther.Len()
 	resultSet := NewSetByCap[T](needLen)
 
 	for i := range s.m {
 		resultSet.Add(i)
 	}
 
-	for i := range other.m {
+	for i := range paramOther.m {
 		resultSet.Add(i)
 	}
 	return resultSet
 }
 
 // 取差集
-func (s *Set[T]) Diff(other Set[T]) Set[T] {
-	resultSet := NewSetByCap[T](s.Len() + other.Len())
+func (s *Set[T]) Diff(paramOther Set[T]) Set[T] {
+	resultSet := NewSetByCap[T](s.Len() + paramOther.Len())
 	for i := range s.m {
-		if !other.Has(i) {
+		if !paramOther.Has(i) {
 			resultSet.Add(i)
 		}
 	}
-	for i := range other.m {
+	for i := range paramOther.m {
 		if !s.Has(i) {
 			resultSet.Add(i)
 		}
@@ -112,9 +112,9 @@ func (s *Set[T]) Diff(other Set[T]) Set[T] {
 }
 
 // 其他集合元素没有在本集合中的
-func (s *Set[T]) NotInBySet(other Set[T]) []T {
-	list := make([]T, 0, other.Len())
-	for i := range other.m {
+func (s *Set[T]) NotInBySet(paramOther Set[T]) []T {
+	list := make([]T, 0, paramOther.Len())
+	for i := range paramOther.m {
 		if !s.Has(i) {
 			list = append(list, i)
 		}
@@ -123,9 +123,9 @@ func (s *Set[T]) NotInBySet(other Set[T]) []T {
 }
 
 // 其他数组元素没有在本集合中的
-func (s *Set[T]) NotInByArray(other []T) []T {
-	OtherSet := NewSetBySlice(other)
-	list := make([]T, 0, len(other))
+func (s *Set[T]) NotInByArray(paramOther []T) []T {
+	OtherSet := NewSetBySlice(paramOther)
+	list := make([]T, 0, len(paramOther))
 	for i := range s.m {
 		if !OtherSet.Has(i) {
 			list = append(list, i)
@@ -135,13 +135,13 @@ func (s *Set[T]) NotInByArray(other []T) []T {
 }
 
 // 其他数组元素没有在本集合中的
-func (s *Set[T]) InByArray(other []T) []T {
+func (s *Set[T]) InByArray(paramOther []T) []T {
 	list := []T{}
-	if other == nil {
+	if paramOther == nil {
 		return list
 	}
-	list = make([]T, 0, len(other))
-	for _, i := range other {
+	list = make([]T, 0, len(paramOther))
+	for _, i := range paramOther {
 		if s.Has(i) {
 			list = append(list, i)
 		}
