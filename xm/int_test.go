@@ -43,3 +43,39 @@ func Test_Uint2String(t *testing.T) {
 		}
 	}
 }
+
+func Test_RandomIntScope(t *testing.T) {
+	minValue := int(100)
+	maxValue := int(10000)
+
+	for i := 0; i < 1000; i++ {
+		val := RandomIntScope(minValue, maxValue)
+		if val < minValue || val > maxValue {
+			t.Errorf("RandomIntScope(%d, %d) failed", minValue, maxValue)
+		}
+	}
+}
+
+func Test_ReverseInt64(t *testing.T) {
+	v := []int64{123456789, 987654321, 123456789012345678, 9223372036854775807, -9223372036854775807}
+	dest := []int64{987654321, 123456789, 876543210987654321, 7085774586302733229, -7085774586302733229}
+	for i, val := range v {
+		if ReverseInt64(val) != dest[i] {
+			t.Errorf("ReverseInt64(%d) => %d != %d failed", val, ReverseInt64(val), dest[i])
+		}
+	}
+}
+
+func Test_RandOne(t *testing.T) {
+	v := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	for i := 0; i < 1000; i++ {
+		val, err := RandOneInArray(v)
+		if err != nil {
+			t.Errorf("RandOneInArray(%v) failed: %s", v, err.Error())
+		}
+		if *val < 1 || *val > 10 {
+			t.Errorf("RandOneInArray(%v)  value=%d  failed", v, *val)
+		}
+	}
+}
