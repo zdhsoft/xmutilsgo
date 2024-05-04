@@ -149,6 +149,24 @@ func (s *Set[T]) InByArray(paramOther []T) []T {
 	return list
 }
 
+// 判断两个集合是否相等
+func (s *Set[T]) IsEqu(paramOther Set[T]) bool {
+	if s.Len() != paramOther.Len() {
+		return false
+	}
+	for i := range s.m {
+		if !paramOther.Has(i) {
+			return false
+		}
+	}
+	for i := range paramOther.m {
+		if !s.Has(i) {
+			return false
+		}
+	}
+	return true
+}
+
 // 指定容量创建
 func NewSetByCap[T comparable](paramCaption int) Set[T] {
 	m := make(map[T]struct{}, paramCaption)

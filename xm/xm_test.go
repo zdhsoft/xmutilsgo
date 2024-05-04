@@ -29,8 +29,15 @@ func TestSet(t *testing.T) {
 	s.Add(1, 2, 3, 4, 5)
 	s.AddFromArray([]int{1, 2, 3, 4, 5})
 
+	s1 := NewSet(1, 2, 3, 4, 5)
+	s1.AddFromArray([]int{1, 2, 3, 4, 5})
+
 	if s.Len() != 5 {
 		t.Errorf("s.Len() = %d 而不是5", s.Len())
+	}
+
+	if !s.IsEqu(s1) {
+		t.Errorf("s.IsEqu(s1) != true")
 	}
 
 	testList := map[int]bool{
@@ -59,4 +66,81 @@ func TestSet(t *testing.T) {
 	}
 	ss := s.All()
 	fmt.Println(ss)
+}
+
+func TestIsInAndNotIn(t *testing.T) {
+	s := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	notin := []int{11, 12, 13, 14, 15}
+	for _, v := range s {
+		if !IsIn(v, s...) {
+			t.Errorf("IsIn(%d, s) != true", v)
+		}
+		if IsNotIn(v, s...) {
+			t.Errorf("IsNotIn(%d, s) != false", v)
+		}
+	}
+	for _, v := range notin {
+		if IsIn(v, s...) {
+			t.Errorf("IsIn(%d, s) != false", v)
+		}
+		if !IsNotIn(v, s...) {
+			t.Errorf("IsNotIn(%d, s) != true", v)
+		}
+	}
+}
+
+func TestIsInAndNotInForArray(t *testing.T) {
+	s := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	notin := []int{11, 12, 13, 14, 15}
+	for _, v := range s {
+		if !IsInArray(v, s) {
+			t.Errorf("IsIn(%d, s) != true", v)
+		}
+		if IsNotInArray(v, s) {
+			t.Errorf("IsNotIn(%d, s) != false", v)
+		}
+	}
+	for _, v := range notin {
+		if IsInArray(v, s) {
+			t.Errorf("IsIn(%d, s) != false", v)
+		}
+		if !IsNotInArray(v, s) {
+			t.Errorf("IsNotIn(%d, s) != true", v)
+		}
+	}
+}
+
+func TestEasyMD5(t *testing.T) {
+	s := []string{"hello", "world", "123456", "你好，世界"}
+	md5List := []string{"5d41402abc4b2a76b9719d911017c592", "7d793037a0760186574b0282f2f435e7", "e10adc3949ba59abbe56e057f20f883e", "dbefd3ada018615b35588a01e216ae6e"}
+
+	for idx, v := range s {
+		if md5List[idx] != EasyMD5(v) {
+			t.Errorf("EasyMD5(%s) => %s != %s", v, EasyMD5(v), md5List[idx])
+		}
+	}
+}
+
+func TestPage(t *testing.T) {
+	s := []*PageInfo{
+		NewPage(1, 10),
+		NewPage(10, 20),
+		NewPage(20, 30),
+		NewPage(30, 40),
+		NewPage(40, 5999),
+	}
+
+	d := []*PageInfo{
+		{1, 10},
+		{10, 20},
+		{20, 30},
+		{30, 40},
+		{40, 1000},
+	}
+
+	for idx, v := range s {
+		if v.Page != d[idx].Page || v.PageSize != d[idx].PageSize {
+			t.Errorf("s[%d] = %v, 实际要求为%v", idx, v, d[idx])
+		}
+	}
 }
