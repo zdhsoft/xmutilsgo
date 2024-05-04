@@ -199,9 +199,3 @@ func NewSetBySlice[T comparable](paramSlice []T) Set[T] {
 	}
 	return s
 }
-
-// 去重
-func Deduplicate[T comparable](paramList []T) []T {
-	set := NewSetBySlice(paramList)
-	return set.All()
-}
