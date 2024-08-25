@@ -136,11 +136,10 @@ func (s *Set[T]) NotInByArray(paramOther []T) []T {
 
 // InByArray 其他数组元素没有在本集合中的
 func (s *Set[T]) InByArray(paramOther []T) []T {
-	var list []T
 	if paramOther == nil {
-		return list
+		return []T{}
 	}
-	list = make([]T, 0, len(paramOther))
+	list := make([]T, 0, len(paramOther))
 	for _, i := range paramOther {
 		if s.Has(i) {
 			list = append(list, i)

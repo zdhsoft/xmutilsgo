@@ -29,6 +29,6 @@ func ArraySortByFunc[T any](paramArray1 []T, paramLess func(i, j int) bool) {
 // ArraySort 数组排序
 //
 //	默认的有IntSlice, Float64Slice, StringSlice等类型
-func ArraySort[T sort.Interface](paramArray1 T) {
-	sort.Sort(paramArray1)
+func ArraySort[T sort.Interface](paramArray T) {
+	sort.Sort(paramArray)
 }

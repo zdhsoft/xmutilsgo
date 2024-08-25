@@ -11,14 +11,14 @@ type SignedInteger interface {
 	~int8 | ~int16 | ~int32 | ~int | ~int64
 }
 
-// UnsignedInterger 无符号整数类型
-type UnsignedInterger interface {
+// UnsignedInteger 无符号整数类型
+type UnsignedInteger interface {
 	~uint8 | ~uint16 | ~uint32 | ~uint | ~uint64
 }
 
 // Integer 所有整数类型
 type Integer interface {
-	SignedInteger | UnsignedInterger
+	SignedInteger | UnsignedInteger
 }
 
 // Int2String /*
@@ -73,7 +73,7 @@ UInt2String 无符号整数转十进制字符串
   - paramValue 要变成字符串的整数
   - return string
 */
-func UInt2String[T UnsignedInterger](paramValue T) string {
+func UInt2String[T UnsignedInteger](paramValue T) string {
 	v := uint64(paramValue)
 	return strconv.FormatUint(v, 10)
 }
@@ -83,7 +83,7 @@ U 简化版无符号整数转十进制字符串
   - paramValue 要变成字符串的整数
   - return string
 */
-func U[T UnsignedInterger](paramValue T) string {
+func U[T UnsignedInteger](paramValue T) string {
 	v := uint64(paramValue)
 	return strconv.FormatUint(v, 10)
 }
@@ -94,7 +94,7 @@ UInt2StringPad 无符号整数转十进制字符串, 并指定最小位数，不
   - paramMinLen 最小的位数
   - return string
 */
-func UInt2StringPad[T UnsignedInterger](paramValue T, paramMinLen int) string {
+func UInt2StringPad[T UnsignedInteger](paramValue T, paramMinLen int) string {
 	return StringPad(UInt2String(paramValue), paramMinLen, "0")
 }
 
@@ -104,7 +104,7 @@ UInt2StringBase 无符号整数转指定进制字符串
   - paramBase 指定的进制 改值有效访问2-36
   - return string
 */
-func UInt2StringBase[T UnsignedInterger](paramValue T, paramBase int) string {
+func UInt2StringBase[T UnsignedInteger](paramValue T, paramBase int) string {
 	v := uint64(paramValue)
 	return strconv.FormatUint(v, paramBase)
 }
@@ -116,7 +116,7 @@ UInt2StringBasePad 无符号整数转指定进制字符串，并指定最小位�
   - paramMinLen 最小的位数
   - return string
 */
-func UInt2StringBasePad[T UnsignedInterger](paramValue T, paramBase int, paramMinLen int) string {
+func UInt2StringBasePad[T UnsignedInteger](paramValue T, paramBase int, paramMinLen int) string {
 	return StringPad(UInt2StringBase(paramValue, paramBase), paramMinLen, "0")
 }
 

@@ -28,3 +28,13 @@ func Json2Struct(jsonStr string, paramStruct interface{}) error {
 	}
 	return nil
 }
+
+// Struct2JsonString 生成紧凑的Json字符串 如果有错误返回空字符串
+func Struct2JsonString(paramStruct interface{}) string {
+	str, err := Struct2Json(paramStruct)
+	if err != nil {
+		return ""
+	} else {
+		return str
+	}
+}
