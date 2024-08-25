@@ -6,33 +6,29 @@ import (
 	"strconv"
 )
 
-// 有符号整数类型
+// SignedInteger 有符号整数类型
 type SignedInteger interface {
 	~int8 | ~int16 | ~int32 | ~int | ~int64
 }
 
-// 无符号整数类型
+// UnsignedInterger 无符号整数类型
 type UnsignedInterger interface {
 	~uint8 | ~uint16 | ~uint32 | ~uint | ~uint64
 }
 
-// 所有整数类型
+// Integer 所有整数类型
 type Integer interface {
 	SignedInteger | UnsignedInterger
 }
 
-/*
-整数转十进制字符串
-  - paramValue 要变成字符串的整数
-  - return string
-*/
+// Int2String /*
 func Int2String[T SignedInteger](paramValue T) string {
 	v := int64(paramValue)
 	return strconv.FormatInt(v, 10)
 }
 
 /*
-简化整数转字符串
+I 简化整数转字符串
   - paramValue 要变成字符串的整数
   - return string
 */
@@ -41,7 +37,7 @@ func I[T SignedInteger](paramValue T) string {
 }
 
 /*
-整数转十进制字符串, 并指定最小位数，不足补0
+Int2StringPad 整数转十进制字符串, 并指定最小位数，不足补0
   - paramValue 要变成字符串的整数
   - paramMinLen 最小的位数
   - return string
@@ -51,7 +47,7 @@ func Int2StringPad[T SignedInteger](paramValue T, paramMinLen int) string {
 }
 
 /*
-整数转指定进制字符串
+Int2StringBase 整数转指定进制字符串
   - paramValue 要变成字符串的整数
   - paramBase 指定的进制 改值有效访问2-36
   - return string
@@ -62,7 +58,7 @@ func Int2StringBase[T SignedInteger](paramValue T, paramBase int) string {
 }
 
 /*
-整数转指定进制字符串，并指定最小位数，不足补0
+Int2StringBasePad 整数转指定进制字符串，并指定最小位数，不足补0
   - paramValue 要变成字符串的整数
   - paramBase 指定的进制 改值有效访问2-36
   - paramMinLen 最小的位数
@@ -73,7 +69,7 @@ func Int2StringBasePad[T SignedInteger](paramValue T, paramBase int, paramMinLen
 }
 
 /*
-无符号整数转十进制字符串
+UInt2String 无符号整数转十进制字符串
   - paramValue 要变成字符串的整数
   - return string
 */
@@ -83,7 +79,7 @@ func UInt2String[T UnsignedInterger](paramValue T) string {
 }
 
 /*
-简化版无符号整数转十进制字符串
+U 简化版无符号整数转十进制字符串
   - paramValue 要变成字符串的整数
   - return string
 */
@@ -93,7 +89,7 @@ func U[T UnsignedInterger](paramValue T) string {
 }
 
 /*
-无符号整数转十进制字符串, 并指定最小位数，不足补0
+UInt2StringPad 无符号整数转十进制字符串, 并指定最小位数，不足补0
   - paramValue 要变成字符串的整数
   - paramMinLen 最小的位数
   - return string
@@ -103,7 +99,7 @@ func UInt2StringPad[T UnsignedInterger](paramValue T, paramMinLen int) string {
 }
 
 /*
-无符号整数转指定进制字符串
+UInt2StringBase 无符号整数转指定进制字符串
   - paramValue 要变成字符串的整数
   - paramBase 指定的进制 改值有效访问2-36
   - return string
@@ -114,7 +110,7 @@ func UInt2StringBase[T UnsignedInterger](paramValue T, paramBase int) string {
 }
 
 /*
-无符号整数转指定进制字符串，并指定最小位数，不足补0
+UInt2StringBasePad 无符号整数转指定进制字符串，并指定最小位数，不足补0
   - paramValue 要变成字符串的整数
   - paramBase 指定的进制 改值有效访问2-36
   - paramMinLen 最小的位数
@@ -125,7 +121,7 @@ func UInt2StringBasePad[T UnsignedInterger](paramValue T, paramBase int, paramMi
 }
 
 /*
-随机一个[paramMinValue, paramMaxValue]之间的整数
+RandomIntScope 随机一个[paramMinValue, paramMaxValue]之间的整数
   - paramMinValue 最小值
   - paramMaxValue 最大值
   - return int 随机值
@@ -139,7 +135,7 @@ func RandomIntScope(paramMinValue int, paramMaxValue int) int {
 	return rand.Intn(paramMaxValue-paramMinValue+1) + paramMinValue
 }
 
-// 64位整数，十进制反转
+// ReverseInt64 64位整数，十进制反转
 func ReverseInt64(paramValue int64) int64 {
 	var result int64
 	num := paramValue
@@ -150,7 +146,7 @@ func ReverseInt64(paramValue int64) int64 {
 	return result
 }
 
-// 随机一个数组中的一个元素
+// RandOneInArray 随机一个数组中的一个元素
 func RandOneInArray[T any](paramArray []T) (*T, error) {
 	cnt := len(paramArray)
 	if cnt == 0 {
@@ -164,7 +160,7 @@ func RandOneInArray[T any](paramArray []T) (*T, error) {
 	}
 }
 
-// 用现有的数组生成一个新的随机数组
+// RandNewByArray 用现有的数组生成一个新的随机数组
 func RandNewByArray[T any](paramArray []T) []T {
 	cnt := len(paramArray)
 	retArr := append([]T{}, paramArray...)
