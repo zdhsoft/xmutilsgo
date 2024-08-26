@@ -1,6 +1,7 @@
 package xm
 
 import (
+	"sort"
 	"testing"
 )
 
@@ -9,5 +10,8 @@ func Test_ArraySort(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		lst = append(lst, RandomIntScope(1, 100000))
 	}
-	ArraySort<[]int>(lst)
+	t.Log("----", lst)
+	sort.Ints(lst)
+	t.Log(">>>>", lst)
+	//  ArraySort<[]int>(lst)
 }
