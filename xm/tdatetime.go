@@ -5,9 +5,9 @@ import "time"
 // TDateTime 日期时间
 type TDateTime struct {
 	// 时间戳 单位毫秒
-	dtTimestamp int64 `json:"timestamp"`
+	dtTimestamp int64
 	// 类型
-	dtType int8 `json:"type"`
+	dtType int8
 }
 
 // IsUTC 是否是格林威治时间
