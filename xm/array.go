@@ -38,7 +38,7 @@ func ArraySortByFunc[S ~[]E, E interface{}](x S, cmp func(a, b E) int) {
 
 // ArraySort 数组排序
 //
-//	默认的有IntSlice, Float64Slice, StringSlice等类型
+//	默认的有支持整数，字符串，浮点数等可以比较大小的基本类型和衍生类型
 func ArraySort[S ~[]E, E cmp.Ordered](paramArray S) {
 	slices.Sort(paramArray)
 }
