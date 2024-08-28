@@ -28,16 +28,25 @@ func Test_Deduplicate(t *testing.T) {
 		}
 		return false, 0
 	}
-	lst := make([]int, 0, 20)
-	for i := 0; i < 20; i++ {
+	lst := make([]int, 0, 40)
+	lst1 := make([]int, 0, 40)
+	for i := 0; i < 40; i++ {
 		lst = append(lst, RandomIntScope(1, 5))
+		lst1 = append(lst1, RandomIntScope(1, 5))
 	}
 	newList := Deduplicate(lst)
+	newList1 := Deduplicate(lst1)
 	t.Log(lst)
 	t.Log(newList)
 	if has, value := hasDup(newList); has {
 		t.Errorf("存在重复的元素：%d", value)
 		return
 	}
-
+	ArraySort(newList)
+	ArraySort(newList1)
+	if !IsEqualArray(newList, newList1) {
+		t.Log("不相等", newList, newList1)
+	} else {
+		t.Log("相等：", newList, newList1)
+	}
 }
