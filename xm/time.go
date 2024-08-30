@@ -56,8 +56,8 @@ func GetNowSecond() int64 {
 func ParseDateTimeForBeijingMillis(paramDate string) (int64, error) {
 	//获取北京时区
 	//时区定义参考： https://jp.cybozu.help/general/zh/admin/list_systemadmin/list_localization/timezone.html
-	loc, _ := time.LoadLocation("Asia/Shanghai")
-	startTime, err := time.ParseInLocation("2006-1-2", paramDate, loc)
+	// loc, _ := time.LoadLocation("Asia/Shanghai")
+	startTime, err := time.ParseInLocation("2006-1-2", paramDate, beijingLoc)
 	if err != nil {
 		return 0, err
 	}
@@ -67,14 +67,23 @@ func ParseDateTimeForBeijingMillis(paramDate string) (int64, error) {
 // ParseDateTimeForBeijingSecond 解析北京格式的日期 单位秒
 func ParseDateTimeForBeijingSecond(paramDate string) (int64, error) {
 	stNow, err := ParseDateTimeForBeijingMillis(paramDate)
-	stNow = (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
+	stNow /= MILLIS_BY_SECOND // (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
 	return stNow, err
 }
 
-// Timestamp2BeijingDate 将时间戳转为北京时区的日期 时间戳单位秒
+// Timestamp2BeijingDate 将时间戳转为北京时区的日期字符串 时间戳单位秒 YYYY-MM-DD
 func Timestamp2BeijingDate(paramTimestamp int64) string {
-	loc, _ := time.LoadLocation("Asia/Shanghai")
-	return time.Unix(paramTimestamp, 0).In(loc).Format("2006-01-02")
+	return time.Unix(paramTimestamp, 0).In(beijingLoc).Format("2006-01-02")
+}
+
+// Timestamp2BeijingTime 将时间戳转为北京时区的时间字符串 时间戳单位秒 hh:mm:ss
+func Timestamp2BeijingTime(paramTimestamp int64) string {
+	return time.Unix(paramTimestamp, 0).In(beijingLoc).Format("15:04:05")
+}
+
+// Timestamp2BeijingDateTime 将时间戳转为北京时区的时间字符串 时间戳单位秒 YYYY-MM-DD hh:mm:ss
+func Timestamp2BeijingDateTime(paramTimestamp int64) string {
+	return time.Unix(paramTimestamp, 0).In(beijingLoc).Format("2006-01-02 15:04:05")
 }
 
 // BeijingFormat 将时间转换为北京时区的格式字符串
@@ -82,17 +91,17 @@ func BeijingFormat(paramDateTime time.Time, paramFormat string) string {
 	return paramDateTime.In(beijingLoc).Format(paramFormat)
 }
 
-// BeijingDateString 将时间转换为北京时区的日期字符串
+// BeijingDateString 将时间转换为北京时区的日期字符串 YYYY-MM-DD
 func BeijingDateString(paramDateTime time.Time) string {
 	return BeijingFormat(paramDateTime, "2006-01-02")
 }
 
-// BeijingDateTimeString 将时间转换为北京时区的日期时间字符串
+// BeijingDateTimeString 将时间转换为北京时区的日期时间字符串 YYYY-MM-DD hh:mm:ss
 func BeijingDateTimeString(paramDateTime time.Time) string {
 	return BeijingFormat(paramDateTime, "2006-01-02 15:04:05")
 }
 
-// BeijingTimeString 将时间转换为北京时区的时间字符串
+// BeijingTimeString 将时间转换为北京时区的时间字符串 hh:mm:ss
 func BeijingTimeString(paramDateTime time.Time) string {
 	return BeijingFormat(paramDateTime, "15:04:05")
 }
@@ -155,5 +164,5 @@ func TimestampSecond2Time(paramTimestamp int64) time.Time {
 
 // TimestampMillis2Time 时间戳转为time.Time 时间戳单位毫秒
 func TimestampMillis2Time(paramMillis int64) time.Time {
-	return time.UnixMilli(paramMillis / MILLIS_BY_SECOND)
+	return time.UnixMilli(paramMillis)
 }
