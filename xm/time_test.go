@@ -7,7 +7,7 @@ import (
 
 func Test_ParseDateTimeForBeijingTimestamp(t *testing.T) {
 	bjDateTime := "2024-08-30"
-	dt, err := ParseDateTimeForBeijingMillis(bjDateTime)
+	dt, err := ParseDateForBeijingMillis(bjDateTime)
 	if err != nil {
 		t.Error(err)
 	}
@@ -17,7 +17,7 @@ func Test_ParseDateTimeForBeijingTimestamp(t *testing.T) {
 		t.Errorf("北京时间：%s 的时间戳不是%d (毫秒)", bjDateTime, dest)
 	}
 
-	dtSecond, errSecond := ParseDateTimeForBeijingSecond(bjDateTime)
+	dtSecond, errSecond := ParseDateForBeijingSecond(bjDateTime)
 	if errSecond != nil {
 		t.Error(errSecond)
 	}
@@ -25,6 +25,41 @@ func Test_ParseDateTimeForBeijingTimestamp(t *testing.T) {
 	if dtSecond != destSecond {
 		t.Errorf("北京时间：%s 的时间戳不是%d (秒)", bjDateTime, destSecond)
 	}
+}
+
+func Test_Days(t *testing.T) {
+	t1 := "2024-08-30 18:18:18"
+	t2 := "2024-08-30 09:28:38"
+	t3 := "2024-09-30 18:18:18"
+
+	tt1, _ := ParseDateTimeForBeijingSecond(t1)
+	tt2, _ := ParseDateTimeForBeijingSecond(t2)
+	tt3, _ := ParseDateTimeForBeijingSecond(t3)
+
+	if !IsSameDayFromTimestampSecond(tt1, tt2) {
+		t.Errorf("%s 和 %s 因该是同一天！", t1, t2)
+	}
+
+	days := DiffDaysFromTimestampSecond(tt1, tt3)
+	days2 := DiffDaysFromTimestampSecond(tt2, tt3)
+
+	if days < 0 {
+		days = -days
+	}
+	if days2 < 0 {
+		days2 = -days2
+	}
+
+	t.Logf("计算出来%s 和 %s 相差%d天", t1, t3, days)
+	t.Logf("计算出来%s 和 %s 相差%d天", t2, t3, days2)
+
+	if days != 31 {
+		t.Errorf("计算出来%s 和 %s = %d 相差不是31天", t1, t3, days)
+	}
+	if days2 != 31 {
+		t.Errorf("计算出来%s 和 %s = %d 相差不是31天", t2, t3, days2)
+	}
+
 }
 
 func Test_Timestamp2Beijing(t *testing.T) {
