@@ -50,3 +50,21 @@ func Test_Deduplicate(t *testing.T) {
 		t.Log("相等：", newList, newList1)
 	}
 }
+
+func Test_ArrayByFunc(t *testing.T) {
+	cmp := func(a int, b int) int {
+		return a - b
+	}
+	lst := make([]int, 0, 20)
+
+	for i := 0; i < 20; i++ {
+		lst = append(lst, RandomIntScope(1, 5))
+	}
+
+	ArraySortByFunc(lst, cmp)
+	t.Log(lst)
+	if !slices.IsSorted(lst) {
+		t.Errorf("排序错误:%v", lst)
+	}
+
+}

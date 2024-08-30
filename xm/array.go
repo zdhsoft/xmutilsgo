@@ -32,8 +32,15 @@ func IsEqualArray[T comparable](paramArray1, paramArray2 []T) bool {
 }
 
 // ArraySortByFunc 数组排序(指定比较函数)
+// cmp比较函数 返回<0 表示按从小到大的顺序，返回>0表示从大到小的顺序
 func ArraySortByFunc[S ~[]E, E interface{}](x S, cmp func(a, b E) int) {
 	slices.SortFunc(x, cmp)
+}
+
+// ArraySortStableFunc 数组稳定排序（指定比较函数）
+// cmp比较函数 返回<0 表示按从小到大的顺序，返回>0表示从大到小的顺序
+func ArraySortStableFunc[S ~[]E, E any](x S, cmp func(a, b E) int) {
+	slices.SortStableFunc(x, cmp)
 }
 
 // ArraySort 数组排序
