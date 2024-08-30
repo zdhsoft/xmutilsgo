@@ -9,7 +9,7 @@ type PageInfo struct {
 	PageSize int `json:"page_size"`
 }
 
-// 创建新的Page对象
+// NewPage 创建新的Page对象
 func NewPage[T Integer](paramPage T, paramPageSize T) *PageInfo {
 	p := PageInfo{
 		Page:     int(paramPage),
@@ -18,13 +18,13 @@ func NewPage[T Integer](paramPage T, paramPageSize T) *PageInfo {
 	return p.RoundPageInfo()
 }
 
-// 围绕页信息 使它在合理值的范围内
+// RoundPageInfo 围绕页信息 使它在合理值的范围内
 func (p *PageInfo) RoundPageInfo() *PageInfo {
 	return p.RoundPageInfoEx(10, 1000)
 }
 
 /*
-围绕页信息 使它在合理值的范围内(指定缺省页值和最大值)
+RoundPageInfoEx 围绕页信息 使它在合理值的范围内(指定缺省页值和最大值)
   - paramDefaultSize 缺省页大小
   - paramMaxSize 最大页大小
 */
@@ -41,7 +41,7 @@ func (p *PageInfo) RoundPageInfoEx(paramDefaultSize int, paramMaxSize int) *Page
 	return p
 }
 
-// 设置页信息
+// SetPage 设置页信息
 func (p *PageInfo) SetPage(paramPage int, paramPageSize int) *PageInfo {
 	p.Page = paramPage
 	p.PageSize = paramPageSize
@@ -56,17 +56,17 @@ func (p *PageInfo) GetPageSize() int {
 	return p.PageSize
 }
 
-// 用于mysql的计算偏移
+// CalcPageOffset 用于mysql的计算偏移
 func (p *PageInfo) CalcPageOffset() int {
 	return (p.Page - 1) * p.PageSize
 }
 
-// 用于mysql的计算limit
+// CalcLimit 用于mysql的计算limit
 func (p *PageInfo) CalcLimit() int {
 	return p.PageSize
 }
 
-// 根据记录数和页的大小 计算最大页数 paramPageSize <= 0时 计算失败
+// CalcMaxPage 根据记录数和页的大小 计算最大页数 paramPageSize <= 0时 计算失败
 func CalcMaxPage(paramCount int, paramPageSize int) (*BaseRet, int) {
 	r := BaseRet{}
 	pageCnt := int(0)

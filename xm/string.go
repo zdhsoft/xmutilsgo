@@ -6,7 +6,7 @@ import (
 )
 
 /*
-字符串位数不足补指定字符
+StringPad 字符串位数不足补指定字符
   - paramStr 源字符串
   - paramMinLen 最小长度
   - paramChar 指定的替换字符
@@ -21,7 +21,7 @@ func StringPad(paramStr string, paramMinLen int, paramChar string) string {
 }
 
 /*
-链接字符串
+StringCat 链接字符串
   - paramArgs 要链接的字符串列表
   - return string 返回链接后的字符串
 */
@@ -34,13 +34,13 @@ func StringCat(paramArgs ...string) string {
 	return builder.String()
 }
 
-// 去除前后空格
+// Trim 去除前后空格
 func Trim(paramStr string) string {
 	return strings.TrimSpace(paramStr)
 }
 
 /*
-替换链接中的域名
+ReplaceDomain 替换链接中的域名
 链接可以绝对地址，也可以是相对地址
 如果newDomain中，没有带https:// 或http:// 则默认视为https:// 如果带了，则以带入的
   - 示例: [原:/api] [新域名:www.google.com]=> https://www.google.com/api
@@ -66,7 +66,7 @@ func ReplaceDomain(paramOldURL string, paramNewDomain string) string {
 	return u.String()
 }
 
-// 字符串截取
+// TruncateString 字符串截取
 // 当字符串超过指定的长度，则截取指定的长度(中文算一个字符)
 func TruncateString(paramValue string, paramMaxLen int) string {
 	if len(paramValue) > paramMaxLen {

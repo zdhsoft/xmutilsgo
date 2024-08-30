@@ -10,6 +10,13 @@ const (
 	ERR_FAIL = 1
 )
 
+type IRet interface {
+	GetRet() int
+	GetMsg() string
+	IsOK() bool
+	IsNotOK() bool
+}
+
 type BaseRet struct {
 	Ret int    `json:"ret"`
 	Msg string `json:"msg"`
@@ -89,3 +96,37 @@ func (r *BaseRet) AssignFrom(paramR *BaseRet) *BaseRet {
 	return r
 }
 
+// AssignErrorFrom 从另一个错误ret复制
+func (r *BaseRet) AssignErrorFrom(paramR IRet) {
+	r.Ret = paramR.GetRet()
+	r.Msg = paramR.GetMsg()
+}
+
+/*
+NewBaseRet 创建一个默认的BaseRet
+*/
+func NewBaseRet() *BaseRet {
+	return new(BaseRet)
+}
+
+/*
+NewBaseRetInit 创建BaseRet并初始化
+*/
+func NewBaseRetInit(paramRet int, paramMsg string) *BaseRet {
+	r := &BaseRet{
+		Ret: paramRet,
+		Msg: paramMsg,
+	}
+	return r
+}
+
+/*
+NewBaseRetError 创建BaseRet并初始化
+*/
+func NewBaseRetError(paramRet int, paramMsg string) error {
+	r := &BaseRet{
+		Ret: paramRet,
+		Msg: paramMsg,
+	}
+	return r
+}

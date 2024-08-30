@@ -7,17 +7,17 @@ import (
 )
 
 const (
-	md5_pattern = `^[a-fA-F0-9]{32}$`
+	md5Pattern = `^[a-fA-F0-9]{32}$`
 )
 
-// 判断输入的字符串是不是md5格式的字符串
+// IsMD5Format 判断输入的字符串是不是md5格式的字符串
 func IsMD5Format(paramValue string) bool {
-	pattern := md5_pattern //`^[a-fA-F0-9]{32}$`
+	pattern := md5Pattern //`^[a-fA-F0-9]{32}$`
 	match, _ := regexp.MatchString(pattern, paramValue)
 	return match
 }
 
-// 生成MD5字符串
+// EasyMD5 生成MD5字符串
 func EasyMD5(paramArgs ...string) string {
 	data := []byte(StringCat(paramArgs...))
 	return fmt.Sprintf("%x", md5.Sum(data))
