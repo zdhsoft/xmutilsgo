@@ -52,8 +52,20 @@ func GetNowSecond() int64 {
 	return time.Now().Unix()
 }
 
-// ParseDateTimeForBeijingMillis 解析北京格式的日期 单位毫秒
+// ParseDateTimeForBeijingMillis 解析北京格式的日期时间 单位毫秒
 func ParseDateTimeForBeijingMillis(paramDate string) (int64, error) {
+	//获取北京时区
+	//时区定义参考： https://jp.cybozu.help/general/zh/admin/list_systemadmin/list_localization/timezone.html
+	// loc, _ := time.LoadLocation("Asia/Shanghai")
+	startTime, err := time.ParseInLocation("2006-1-2 15:4:5", paramDate, beijingLoc)
+	if err != nil {
+		return 0, err
+	}
+	return startTime.UnixMilli(), nil
+}
+
+// ParseDateForBeijingMillis 解析北京格式的日期 单位毫秒
+func ParseDateForBeijingMillis(paramDate string) (int64, error) {
 	//获取北京时区
 	//时区定义参考： https://jp.cybozu.help/general/zh/admin/list_systemadmin/list_localization/timezone.html
 	// loc, _ := time.LoadLocation("Asia/Shanghai")
@@ -67,6 +79,13 @@ func ParseDateTimeForBeijingMillis(paramDate string) (int64, error) {
 // ParseDateTimeForBeijingSecond 解析北京格式的日期 单位秒
 func ParseDateTimeForBeijingSecond(paramDate string) (int64, error) {
 	stNow, err := ParseDateTimeForBeijingMillis(paramDate)
+	stNow /= MILLIS_BY_SECOND // (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
+	return stNow, err
+}
+
+// ParseDateTimeForBeijingSecond 解析北京格式的日期 单位秒
+func ParseDateForBeijingSecond(paramDate string) (int64, error) {
+	stNow, err := ParseDateForBeijingMillis(paramDate)
 	stNow /= MILLIS_BY_SECOND // (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
 	return stNow, err
 }
