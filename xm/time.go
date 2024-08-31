@@ -83,7 +83,7 @@ func ParseDateTimeForBeijingSecond(paramDate string) (int64, error) {
 	return stNow, err
 }
 
-// ParseDateTimeForBeijingSecond 解析北京格式的日期 单位秒
+// ParseDateForBeijingSecond 解析北京格式的日期 单位秒
 func ParseDateForBeijingSecond(paramDate string) (int64, error) {
 	stNow, err := ParseDateForBeijingMillis(paramDate)
 	stNow /= MILLIS_BY_SECOND // (stNow - stNow%MILLIS_BY_SECOND) / MILLIS_BY_SECOND
@@ -140,7 +140,7 @@ func BeijingCompactTimeString(paramDateTime time.Time) string {
 	return BeijingFormat(paramDateTime, "150405")
 }
 
-// GetTimeOperationDayString 获取指定时间根据天数计算后得到的时间
+// GetTimeOperationDayString 获取指定时间根据天数计算后得到的时间 YYYYMMDD格式字符串
 func GetTimeOperationDayString(paramDateTime time.Time, paramDays int) string {
 	paramDateTime = paramDateTime.AddDate(0, 0, paramDays)
 	return BeijingFormat(paramDateTime, "20060102")
