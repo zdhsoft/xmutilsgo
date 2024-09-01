@@ -36,6 +36,33 @@ func Test_Days(t *testing.T) {
 	tt2, _ := ParseDateTimeForBeijingSecond(t2)
 	tt3, _ := ParseDateTimeForBeijingSecond(t3)
 
+	time1 := TimestampSecond2Time(tt1)
+	time2 := TimestampSecond2Time(tt2)
+	time3 := TimestampSecond2Time(tt3)
+
+	strDate1 := GetTimeOperationDayString(time1, 0)
+	strDate2 := GetTimeOperationDayString(time1, 1)
+	strDate3 := GetTimeOperationDayString(time1, 2)
+
+	if strDate1 != "20240830" {
+		t.Errorf("压缩的%s日期%s不等于%s", t1, strDate1, "20240830")
+	}
+	if strDate2 != "20240831" {
+		t.Errorf("压缩的%s 加1天日期%s不等于%s", t1, strDate2, "20240831")
+	}
+
+	if strDate3 != "20240901" {
+		t.Errorf("压缩的%s 加2天日期%s不等于%s", t1, strDate3, "20240901")
+	}
+
+	if !IsSameDayFromTime(time1, time2) {
+		t.Errorf("%s 和 %s 因该是同一天！", t1, t2)
+	}
+
+	if IsSameDayFromTime(time1, time3) {
+		t.Errorf("%s 和 %s 因该不是同一天！", t1, t3)
+	}
+
 	if !IsSameDayFromTimestampSecond(tt1, tt2) {
 		t.Errorf("%s 和 %s 因该是同一天！", t1, t2)
 	}
