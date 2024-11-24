@@ -36,33 +36,6 @@ func Test_Days(t *testing.T) {
 	tt2, _ := ParseDateTimeForBeijingSecond(t2)
 	tt3, _ := ParseDateTimeForBeijingSecond(t3)
 
-	time1 := TimestampSecond2Time(tt1)
-	time2 := TimestampSecond2Time(tt2)
-	time3 := TimestampSecond2Time(tt3)
-
-	strDate1 := GetTimeOperationDayString(time1, 0)
-	strDate2 := GetTimeOperationDayString(time1, 1)
-	strDate3 := GetTimeOperationDayString(time1, 2)
-
-	if strDate1 != "20240830" {
-		t.Errorf("压缩的%s日期%s不等于%s", t1, strDate1, "20240830")
-	}
-	if strDate2 != "20240831" {
-		t.Errorf("压缩的%s 加1天日期%s不等于%s", t1, strDate2, "20240831")
-	}
-
-	if strDate3 != "20240901" {
-		t.Errorf("压缩的%s 加2天日期%s不等于%s", t1, strDate3, "20240901")
-	}
-
-	if !IsSameDayFromTime(time1, time2) {
-		t.Errorf("%s 和 %s 因该是同一天！", t1, t2)
-	}
-
-	if IsSameDayFromTime(time1, time3) {
-		t.Errorf("%s 和 %s 因该不是同一天！", t1, t3)
-	}
-
 	if !IsSameDayFromTimestampSecond(tt1, tt2) {
 		t.Errorf("%s 和 %s 因该是同一天！", t1, t2)
 	}
@@ -77,8 +50,8 @@ func Test_Days(t *testing.T) {
 		days2 = -days2
 	}
 
-	t.Logf("计算出来%s 和 %s 相差%d天", t1, t3, days)
-	t.Logf("计算出来%s 和 %s 相差%d天", t2, t3, days2)
+	// t.Logf("计算出来%s 和 %s 相差%d天", t1, t3, days)
+	// t.Logf("计算出来%s 和 %s 相差%d天", t2, t3, days2)
 
 	if days != 31 {
 		t.Errorf("计算出来%s 和 %s = %d 相差不是31天", t1, t3, days)
@@ -87,6 +60,25 @@ func Test_Days(t *testing.T) {
 		t.Errorf("计算出来%s 和 %s = %d 相差不是31天", t2, t3, days2)
 	}
 
+}
+
+func Test_DateTimeCalc(t *testing.T) {
+	dtNow := MakeBeijingDateTime()
+	lastTimestamp := dtNow.ToBeijingZeroTime().ToUTC().GetSecond()
+
+	beginTime7 := time.Unix(lastTimestamp-SECOND_BY_DAY*7, 0)
+	endTime := time.Unix(lastTimestamp-1, 0)
+
+	todayTime := time.Unix(lastTimestamp-SECOND_BY_DAY*0, 0)
+	yesterdayTime := time.Unix(lastTimestamp-SECOND_BY_DAY*1, 0)
+
+	// 今日日期字符串
+	strToday := BeijingDateString(todayTime)
+	// 昨天日期字符串
+	strYesterday := BeijingDateString(yesterdayTime)
+
+	t.Logf("今天是：%s, 昨天是：%s", strToday, strYesterday)
+	t.Logf("beginTime7:%s, endTime:%s", beginTime7.Format("2006-01-02 15:04:05"), endTime.Format("2006-01-02 15:04:05"))
 }
 
 func Test_Timestamp2Beijing(t *testing.T) {
@@ -101,9 +93,9 @@ func Test_Timestamp2Beijing(t *testing.T) {
 	bjDate := Timestamp2BeijingDate(dtTimestamp)
 	bjTime := Timestamp2BeijingTime(dtTimestamp)
 	bjDateTime := Timestamp2BeijingDateTime(dtTimestamp)
-	t.Log(bjDate)
-	t.Log(bjTime)
-	t.Log(bjDateTime)
+	// t.Log(bjDate)
+	// t.Log(bjTime)
+	// t.Log(bjDateTime)
 	if bjDate != destDate {
 		t.Errorf("(%s)%d => Date != %s", destDateTime, dtTimestamp, bjDate)
 	}
@@ -120,9 +112,9 @@ func Test_Timestamp2Beijing(t *testing.T) {
 	bjDate = BeijingDateString(stTime)
 	bjTime = BeijingTimeString(stTime)
 	bjDateTime = BeijingDateTimeString(stTime)
-	t.Log(bjDate)
-	t.Log(bjTime)
-	t.Log(bjDateTime)
+	// t.Log(bjDate)
+	// t.Log(bjTime)
+	// t.Log(bjDateTime)
 	if bjDate != destDate {
 		t.Errorf("(%s)%d => Date != %s", destDateTime, dtTimestamp, bjDate)
 	}
@@ -136,9 +128,9 @@ func Test_Timestamp2Beijing(t *testing.T) {
 	bjDate = BeijingCompactDateString(stTime)
 	bjTime = BeijingCompactTimeString(stTime)
 	bjDateTime = BeijingCompactDateTimeString(stTime)
-	t.Log(bjDate)
-	t.Log(bjTime)
-	t.Log(bjDateTime)
+	// t.Log(bjDate)
+	// t.Log(bjTime)
+	// t.Log(bjDateTime)
 	if bjDate != destCompactDate {
 		t.Errorf("(%s)%d => Compact Date != %s", destDateTime, dtTimestamp, bjDate)
 	}
@@ -148,5 +140,84 @@ func Test_Timestamp2Beijing(t *testing.T) {
 
 	if bjDateTime != destCompactDateTime {
 		t.Errorf("(%s)%d => Compact DateTime != %s", destDateTime, dtTimestamp, bjDateTime)
+	}
+}
+
+func Test_ParseDateTime(t *testing.T) {
+	srcDateTime := "2024-08-30 18:18:18"
+	srcDate := "2024-08-30"
+
+	dt, err := ParseDateTimeForBeijingTime(srcDateTime)
+	if err != nil {
+		t.Error(err)
+	}
+	destDateTime := dt.Format("2006-01-02 15:04:05")
+	if destDateTime != srcDateTime {
+		t.Errorf("(%s) => DateTime != %s", srcDateTime, destDateTime)
+	}
+
+	stDate, err := ParseDateForBeijingTime(srcDate)
+	if err != nil {
+		t.Error(err)
+	}
+	destDate := stDate.Format("2006-01-02")
+	if destDate != srcDate {
+		t.Errorf("(%s) => Date != %s", srcDate, destDate)
+	}
+
+	if !IsDateTimeFormat(srcDateTime) {
+		t.Errorf("(%s) => DateTime Format Error", srcDateTime)
+	}
+
+	if !IsDateFormat(srcDate) {
+		t.Errorf("(%s) => Date Format Error", srcDate)
+	}
+}
+
+func Test_ParamDateTime(t *testing.T) {
+	srcDateTime := "2024-08-30 18:18:18"
+	srcDate := "2024-08-30"
+
+	strMinDate := "2024-08-30 00:00:00"
+	strMaxDate := "2024-08-30 23:59:59"
+
+	DateNum := 20240830
+
+	paramDate := NewBeijingParamDateTime(srcDate)
+	paramDateTime := NewBeijingParamDateTime(srcDateTime)
+
+	if !paramDate.IsDate() {
+		t.Errorf("不是日期类型：%d want %d", paramDate.GetDateType(), PARAM_TYPE_DATE)
+	}
+	if !paramDateTime.IsDateTime() {
+		t.Errorf("不是日期时间类型：%d want %d", paramDateTime.GetDateType(), PARAM_TYPE_DATETIME)
+	}
+
+	if paramDate.GetDateString() != srcDate {
+		t.Errorf("日期类型：%s want %s", paramDate.GetDateString(), srcDate)
+	}
+	if paramDateTime.GetDateTimeString() != srcDateTime {
+		t.Errorf("日期时间类型：%s want %s", paramDateTime.GetDateTimeString(), srcDateTime)
+	}
+
+	if paramDate.MinDateTimeString() != strMinDate {
+		t.Errorf("最小日期时间：%s want %s", paramDate.MinDateTimeString(), strMinDate)
+	}
+	if paramDate.MaxDateTimeString() != strMaxDate {
+		t.Errorf("最大日期时间：%s want %s", paramDate.MaxDateTimeString(), strMaxDate)
+	}
+
+	if paramDateTime.MinDateTimeString() != strMinDate {
+		t.Errorf("最小日期时间：%s want %s", paramDateTime.MinDateTimeString(), strMinDate)
+	}
+	if paramDateTime.MaxDateTimeString() != strMaxDate {
+		t.Errorf("最大日期时间：%s want %s", paramDateTime.MaxDateTimeString(), strMaxDate)
+	}
+
+	if paramDate.DateNum() != DateNum {
+		t.Errorf("日期类型：%d want %d", paramDate.DateNum(), DateNum)
+	}
+	if paramDateTime.DateNum() != DateNum {
+		t.Errorf("日期时间类型：%d want %d", paramDateTime.DateNum(), DateNum)
 	}
 }

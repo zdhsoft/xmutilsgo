@@ -173,3 +173,31 @@ func RandNewByArray[T any](paramArray []T) []T {
 	}
 	return retArr
 }
+
+// Str2Int 字符串转整数
+func Str2Int[T Integer](paramStr string) (T, error) {
+	v, err := strconv.ParseInt(paramStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return T(v), nil
+}
+
+// Str2UInt 字符串转无符号整数
+func Str2UInt[T UnsignedInteger](paramStr string) (T, error) {
+	v, err := strconv.ParseUint(paramStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return T(v), nil
+}
+
+// Str2Float 字符串转浮点数
+func Str2Float(paramStr string) (float64, error) {
+	return strconv.ParseFloat(paramStr, 64)
+}
+
+// Float2Str 浮点数转字符串
+func Float2Str[T ~float32 | ~float64](paramFloat T) string {
+	return strconv.FormatFloat(float64(paramFloat), 'f', -1, 64)
+}

@@ -130,3 +130,12 @@ func NewBaseRetError(paramRet int, paramMsg string) error {
 	}
 	return r
 }
+
+// Error2Ret 将error转换为BaseRet
+func Error2Ret(err error) *BaseRet {
+	if err == nil {
+		return nil
+	}
+	r := err.(*BaseRet)
+	return r
+}

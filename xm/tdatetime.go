@@ -85,6 +85,24 @@ func (t *TDateTime) GetType() int8 {
 	return t.dtType
 }
 
+// 增加天数 负数表示减少
+func (t *TDateTime) AddDays(paramDays int) {
+	if paramDays != 0 {
+		t.dtTimestamp += int64(paramDays) * MILLIS_BY_DAY
+	}
+}
+
+// 将TDateTime转换成时间对象
+func (t *TDateTime) ToTime() time.Time {
+	ts := t.dtTimestamp
+	if t.IsBeijing() {
+		ts += MILLIS_BY_TIMEZONE_BEIJING
+	}
+	millis := ts % MILLIS_BY_SECOND
+	sec := (t.dtTimestamp - millis) / MILLIS_BY_SECOND
+	return time.Unix(sec, millis*int64(time.Millisecond))
+}
+
 // MakeDateTime 生成当前时间的时间对象
 func MakeDateTime() *TDateTime {
 	st := TDateTime{dtTimestamp: time.Now().UnixMilli(), dtType: DT_TYPE_UTC}

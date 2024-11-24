@@ -18,6 +18,8 @@ func IsMD5Format(paramValue string) bool {
 }
 
 // EasyMD5 生成MD5字符串
+// 输入参数可以是任意多个字符串，会自动拼接成一个字符串
+// 然后生成MD5字符串
 func EasyMD5(paramArgs ...string) string {
 	data := []byte(StringCat(paramArgs...))
 	return fmt.Sprintf("%x", md5.Sum(data))

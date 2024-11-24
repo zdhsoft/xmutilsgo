@@ -95,7 +95,8 @@ func (s *Set[T]) Or(paramOther Set[T]) Set[T] {
 	return resultSet
 }
 
-// Diff 取差集
+// Diff 取只在一个集合中的元素
+// 在本集合不在paramOther集合中的元素或在paramOther集合不在本集合中的元素
 func (s *Set[T]) Diff(paramOther Set[T]) Set[T] {
 	resultSet := NewSetByCap[T](s.Len() + paramOther.Len())
 	for i := range s.m {
@@ -122,19 +123,29 @@ func (s *Set[T]) NotInBySet(paramOther Set[T]) []T {
 	return list
 }
 
-// NotInByArray 其他数组元素没有在本集合中的
+// NotInByArray 取出所有不在本集合中的数组元素
 func (s *Set[T]) NotInByArray(paramOther []T) []T {
-	OtherSet := NewSetBySlice(paramOther)
+	// OtherSet := NewSetBySlice(paramOther)
+	// list := make([]T, 0, len(paramOther))
+	// for i := range s.m {
+	// 	if !OtherSet.Has(i) {
+	// 		list = append(list, i)
+	// 	}
+	// }
+	// return list
+	if paramOther == nil {
+		return []T{}
+	}
 	list := make([]T, 0, len(paramOther))
-	for i := range s.m {
-		if !OtherSet.Has(i) {
+	for _, i := range paramOther {
+		if !s.Has(i) {
 			list = append(list, i)
 		}
 	}
 	return list
 }
 
-// InByArray 其他数组元素没有在本集合中的
+// InByArray 取出所有在本集合中的数组元素
 func (s *Set[T]) InByArray(paramOther []T) []T {
 	if paramOther == nil {
 		return []T{}
@@ -175,7 +186,7 @@ func NewSetByCap[T comparable](paramCaption int) Set[T] {
 	return s
 }
 
-// NewSet 默认创建
+// NewSet 通过参数列表创建集合
 func NewSet[T comparable](paramList ...T) Set[T] {
 	m := make(map[T]struct{})
 	for _, v := range paramList {

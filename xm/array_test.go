@@ -36,8 +36,8 @@ func Test_Deduplicate(t *testing.T) {
 	}
 	newList := Deduplicate(lst)
 	newList1 := Deduplicate(lst1)
-	t.Log(lst)
-	t.Log(newList)
+	// t.Log(lst)
+	// t.Log(newList)
 	if has, value := hasDup(newList); has {
 		t.Errorf("存在重复的元素：%d", value)
 		return
@@ -45,12 +45,10 @@ func Test_Deduplicate(t *testing.T) {
 	ArraySort(newList)
 	ArraySort(newList1)
 	if !IsEqualArray(newList, newList1) {
-		t.Log("不相等", newList, newList1)
-	} else {
-		t.Log("相等：", newList, newList1)
+		t.Errorf("不相等: %v, %v", newList, newList1)
+		return
 	}
 }
-
 func Test_ArrayByFunc(t *testing.T) {
 	cmp := func(a int, b int) int {
 		return a - b
@@ -62,7 +60,7 @@ func Test_ArrayByFunc(t *testing.T) {
 	}
 
 	ArraySortByFunc(lst, cmp)
-	t.Log(lst)
+	//t.Log(lst)
 	if !slices.IsSorted(lst) {
 		t.Errorf("排序错误:%v", lst)
 	}

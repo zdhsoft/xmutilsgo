@@ -5,6 +5,27 @@ import (
 	"strings"
 )
 
+var (
+	randomStringChars = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+)
+
+// 随机字符串
+//   - paramLen 字符串长度 (1-10000)
+//   - return string 返回随机字符串
+func RandomString(paramLen int) string {
+	if paramLen <= 0 || paramLen > 10000 {
+		return ""
+	}
+	lenChar := len(randomStringChars)
+	build := &strings.Builder{}
+	build.Grow(paramLen)
+	for i := 0; i < paramLen; i++ {
+		idx := RandomIntScope(0, lenChar-1)
+		build.WriteString(randomStringChars[idx])
+	}
+	return build.String()
+}
+
 /*
 StringPad 字符串位数不足补指定字符
   - paramStr 源字符串
