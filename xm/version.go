@@ -1,7 +1,7 @@
 package xm
 
 const (
-	Version = "1.0.5"
+	Version = "1.0.4"
 	Name    = "xm"
 )
 
