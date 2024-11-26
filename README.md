@@ -20,6 +20,13 @@ go get github.com/zdhsoft/xmutilsgo
 
 
 # 版本信息
+- v1.0.4
+  - page增加Offset和Limit方法(简化)
+  - 增加是否是错误的类型判断
+  - 增加ParamDateTime是否为空字符的函数
+  - 增加NewGormWhere函数，用于简化Gorm的条件查询
+  - 增加GormWhere类，用于简化Gorm的条件查询
+  - 增加ParamDateTime类，用于处理日期参数
 - v1.0.1
   - 增加一些单元测试
   - 增加判断集合是否相同的方法
