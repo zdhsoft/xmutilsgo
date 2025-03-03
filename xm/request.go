@@ -129,6 +129,16 @@ func isEmptyValue(paramValue reflect.Value) bool {
 	}
 }
 
+// 连接 Get 的请求参数
+func joinGetParamsString(paramPath string, paramQueryString string) string {
+	queryString := Trim(paramQueryString)
+	if queryString != "" {
+		return paramPath + "?" + queryString
+	} else {
+		return paramPath
+	}
+}
+
 // valueToString 值类型转换（支持常见类型和嵌套指针）
 func valueToString(paramValue reflect.Value) (string, error) {
 	// 处理指针嵌套
@@ -211,8 +221,7 @@ func PostRequestByOrigin(paramURL string, paramHeaders map[string]string, paramB
 //   - 返回值：响应数据，[]byte 类型
 func GetRequestByOrigin(paramURL string, paramHeaders map[string]string, paramQueryString string) ([]byte, error) {
 	// 构造完整的 URL，包含查询参数
-	finalURL := paramURL + "?" + paramQueryString
-
+	finalURL := joinGetParamsString(paramURL, paramQueryString)
 	// 创建一个新的 GET 请求
 	req, err := http.NewRequest("GET", finalURL, nil)
 	if err != nil {
@@ -352,9 +361,7 @@ func GetRequestByMap2Map(paramURL string, paramHeaders map[string]string, params
 		queryParams.Add(key, strValue)
 	}
 
-	// 构造完整的 URL，包含查询参数
-	finalURL := paramURL + "?" + queryParams.Encode()
-
+	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
 	// 创建一个新的 GET 请求
 	req, err := http.NewRequest("GET", finalURL, nil)
 	if err != nil {
@@ -404,7 +411,7 @@ func GetRequestByMap2Struct(paramURL string, paramHeaders map[string]string, par
 	}
 
 	// 构造完整的 URL，包含查询参数
-	finalURL := paramURL + "?" + queryParams.Encode()
+	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
 
 	// 创建一个新的 GET 请求
 	req, err := http.NewRequest("GET", finalURL, nil)
@@ -453,8 +460,8 @@ func GetRequestByStruct2Map(paramURL string, paramHeaders map[string]string, par
 	}
 
 	// 构造完整的 URL，包含查询参数
-	finalURL := paramURL + "?" + queryParams.Encode()
-	fmt.Println(finalURL)
+
+	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
 
 	// 创建一个新的 GET 请求
 	req, err := http.NewRequest("GET", finalURL, nil)
@@ -505,8 +512,7 @@ func GetRequestByStruct2Struct(paramURL string, paramHeaders map[string]string, 
 	}
 
 	// 构造完整的 URL，包含查询参数
-	finalURL := paramURL + "?" + queryParams.Encode()
-	fmt.Println(finalURL)
+	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
 
 	// 创建一个新的 GET 请求
 	req, err := http.NewRequest("GET", finalURL, nil)
