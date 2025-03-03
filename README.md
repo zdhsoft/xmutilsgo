@@ -25,6 +25,16 @@ go get github.com/zdhsoft/xmutilsgo
 
 # 版本信息
 
+- v1.0.6 增加参数中日期，日期时间的检查
+  - ParamDateTimeCheck 日期时间参数解析
+  - ParamDateCheck 日期参数解析
+  - ParamDateOrDateTimeCheck 日期或日期时间参数解析
+- GormWhere 增加一组方法
+  - AddDateTimeScope 日期时间范围参数解析
+  - AddDateScope 日期范围参数解析
+  - AddDateTimeScopeTimestamp 日期时间范围参数解析(时间戳)
+  - AddDateScopeTimestamp 日期范围参数解析(时间戳)
+
 - v1.0.5 增加一组 http 请求相关函数
   - StructToQueryParams 将带有json标记的结构体转换为url.Values
   - PostRequestByOrigin 原始的POST 请求，上传 JSON 数据并返回 JSON 响应
