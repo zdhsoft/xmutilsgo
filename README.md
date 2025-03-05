@@ -23,7 +23,12 @@ go get github.com/zdhsoft/xmutilsgo
 - version.go 版本信息
 - request.go 封装了一些常用的http请求函数
 
-# 版本信息
+## 版本信息
+
+- v1.0.7 增加一些0点计算的函数
+  - 增加GetMidnightTimeToTime和GetMidnightTimestampToTime函数
+  - 重构GetMidnightTimestamp，GetMidnightTime实现
+  - 增加北京时区常量TIME_ZONE_BEIJING
 
 - v1.0.6 增加参数中日期，日期时间的检查
   - ParamDateTimeCheck 日期时间参数解析
