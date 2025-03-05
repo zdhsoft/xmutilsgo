@@ -101,3 +101,30 @@ func TruncateString(paramValue string, paramMaxLen int) string {
 	}
 	return paramValue
 }
+
+// HasWhitespace 判断字符串是否包含空格
+//   - 普通空格：' ' (U+0020)
+//   - 水平制表符：\t (U+0009)
+//   - 换行符：\n (U+000A)
+//   - 垂直制表符：\v (U+000B)
+//   - 换页符：\f (U+000C)
+//   - 回车符：\r (U+000D)
+func HasWhitespace(s string) bool {
+	for _, r := range s {
+		if unicode.IsSpace(r) {
+			return true
+		}
+	}
+	return false
+}
+
+// RemoveAllWhiteSpace 移除字符串中的所有空格
+func RemoveAllWhiteSpace(s string) string {
+	list := make([]rune, 0, len(s))
+	for _, r := range s {
+		if !unicode.IsSpace(r) {
+			list = append(list, r)
+		}
+	}
+	return string(list)
+}
