@@ -282,6 +282,13 @@ func Test_TimeZoneTest(t *testing.T) {
 		t.Errorf("北京时间：%s 对应的迪拜0点时间戳不是%d (秒)", t3, 1727640000)
 	}
 
+	tt1bj, _ := GetMidnightTimestampToTime(tt1, TIME_ZONE_BEIJING)
+	tt2bj, _ := GetMidnightTimestampToTime(tt2, TIME_ZONE_BEIJING)
+	tt3bj, _ := GetMidnightTimestampToTime(tt3, TIME_ZONE_BEIJING)
+	t.Logf("北京时间：%s(%d) 的北京0点时间：%s", t1, tt1, tt1bj.Format("2006-01-02 15:04:05"))
+	t.Logf("北京时间：%s(%d) 的北京0点时间：%s", t2, tt2, tt2bj.Format("2006-01-02 15:04:05"))
+	t.Logf("北京时间：%s(%d) 的北京0点时间：%s", t3, tt3, tt3bj.Format("2006-01-02 15:04:05"))
+
 	dbtime1, _ := ConvertTimestampToTime(dbt1, 4)
 	dbtime2, _ := ConvertTimestampToTime(dbt2, 4)
 	dbtime3, _ := ConvertTimestampToTime(dbt3, 4)

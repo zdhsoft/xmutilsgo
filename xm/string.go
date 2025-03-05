@@ -3,6 +3,7 @@ package xm
 import (
 	"net/url"
 	"strings"
+	"unicode"
 )
 
 var (

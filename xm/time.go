@@ -569,7 +569,7 @@ func GetMidnightTimestamp(timestamp int64, timezoneOffset int) (int64, error) {
 	return midnight.Unix(), nil
 }
 
-// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数）
+// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数，例如北京时区： 8）
 //   - timestamp: 时间戳 单位：秒
 //   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数）
 //
@@ -578,7 +578,7 @@ func GetMidnightTimestampToTime(timestamp int64, timezoneOffset int) (time.Time,
 	return GetMidnightTimeToTime(time.Unix(timestamp, 0), timezoneOffset)
 }
 
-// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数）
+// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数，例如北京时区： 8）
 //   - paramTime: 指定的时间
 //   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数）
 //
@@ -591,7 +591,7 @@ func GetMidnightTime(paramTime time.Time, timezoneOffset int) (int64, error) {
 	return midnight.Unix(), nil
 }
 
-// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数）
+// 获取指定时区的 0 点时间戳（时区偏移为 -12 到 +12 的整数，例如北京时区： 8）
 //   - paramTime: 指定的时间
 //   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数）
 //
@@ -612,7 +612,7 @@ func GetMidnightTimeToTime(paramTime time.Time, timezoneOffset int) (time.Time, 
 
 // 将指定时间转换为目标时区的时间
 //   - paramTime: 指定的时间
-//   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数）
+//   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数，例如北京时区： 8）
 //
 // 返回值：目标时区的时间
 func ConvertTimeToTime(t time.Time, timezoneOffset int) (time.Time, error) {
@@ -631,7 +631,7 @@ func ConvertTimeToTime(t time.Time, timezoneOffset int) (time.Time, error) {
 
 // 将时间戳转换为指定时区的时间
 //   - timestamp: 时间戳 单位：秒
-//   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数）
+//   - timezoneOffset: 时区偏移 单位：小时 （时区偏移为 -12 到 +12 的整数，例如北京时区： 8）
 //
 // 返回值：指定时区的时间
 func ConvertTimestampToTime(timestamp int64, timezoneOffset int) (time.Time, error) {
