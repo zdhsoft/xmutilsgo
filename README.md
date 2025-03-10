@@ -22,8 +22,13 @@ go get github.com/zdhsoft/xmutilsgo
 - utils.go 其他工具函数
 - version.go 版本信息
 - request.go 封装了一些常用的http请求函数
+- gorm.go 封装了一些常用的gorm操作函数
 
 ## 版本信息
+
+- v1.0.8 增加了gorm的方法
+  - AddDateScopeDateTime 增加日期范围条件，被查询的字段是datetime类型
+  - 注释增加了查询字段的类型说明
 
 - v1.0.7 增加一些0点计算的函数
   - 增加GetMidnightTimeToTime和GetMidnightTimestampToTime函数

@@ -76,7 +76,7 @@ func (w *GormWhere) WhereValues() []interface{} {
 	return values
 }
 
-// 日期时间范围参数解析
+// 日期时间范围参数解析 字段的类型是 DATETIME
 //
 //	 注意：开始时间和结束时间存在的时候：paramFieldName between ? and ?
 //			都不存在的时候：不会生成 where 条件
@@ -84,7 +84,7 @@ func (w *GormWhere) WhereValues() []interface{} {
 //	     仅仅存在结束时间的时候：paramFieldName <= ?
 //
 //		SQL 语句的 where 条件的是日期时间字符串 YYYY-MM-DD HH:MM:SS
-//		- paramFieldName: 时间字段名称
+//		- paramFieldName: 时间字段名称 字段的类型是 DATETIME
 //		- paramBeginDateTime: 开始时间参数名称
 //		- paramBeginTime: 开始时间字符串 (格式：YYYY-MM-DD HH:MM:SS)
 //		- paramEndName: 结束时间参数名称
@@ -125,7 +125,7 @@ func (w *GormWhere) AddDateTimeScope(paramFieldName string, paramBeignName strin
 	return r
 }
 
-// 日期时间范围参数解析
+// 日期时间范围参数解析 字段的类型是 DATE
 //
 //	 注意：开始时间和结束时间存在的时候：paramFieldName between ? and ?
 //			都不存在的时候：不会生成 where 条件
@@ -133,7 +133,7 @@ func (w *GormWhere) AddDateTimeScope(paramFieldName string, paramBeignName strin
 //	     仅仅存在结束时间的时候：paramFieldName <= ?
 //
 //		SQL 语句的 where 条件的是日期时间字符串 YYYY-MM-DD
-//		- paramFieldName: 时间字段名称
+//		- paramFieldName: 时间字段名称 字段的类型是 DATE
 //		- paramBeignName: 开始时间参数名称
 //		- paramBeginDate: 开始日期字符串 (格式：YYYY-MM-DD)
 //		- paramEndName: 结束时间参数名称
@@ -174,7 +174,56 @@ func (w *GormWhere) AddDateScope(paramFieldName string, paramBeignName string, p
 	return r
 }
 
-// 日期时间范围参数解析(时间戳)
+// 日期时间范围参数解析 字段的类型是 DATEIME
+//
+//	 注意：开始时间和结束时间存在的时候：paramFieldName between ? and ?
+//			都不存在的时候：不会生成 where 条件
+//	     仅仅存在开始时间的时候：paramFieldName >= ?
+//	     仅仅存在结束时间的时候：paramFieldName <= ?
+//
+//		SQL 语句的 where 条件的是日期时间字符串 YYYY-MM-DD
+//		- paramFieldName: 时间字段名称 字段的类型是 DATEIME
+//		- paramBeignName: 开始时间参数名称
+//		- paramBeginDate: 开始日期字符串 (格式：YYYY-MM-DD)
+//		- paramEndName: 结束时间参数名称
+//		- paramEndDate: 结束日期字符串 (格式：YYYY-MM-DD)
+//
+// 返回值：
+func (w *GormWhere) AddDateScopeDateTime(paramFieldName string, paramBeignName string, paramBeginDate string, paramEndName string, paramEndDate string) *BaseRet {
+	r := NewBaseRet()
+	for range [1]int{} {
+		stBegin, retBegin := ParamDateCheck(paramBeginDate, paramBeginDate, true)
+		if retBegin.IsNotOK() {
+			r.AssignErrorFrom(retBegin)
+			break
+		}
+		stEnd, retEnd := ParamDateCheck(paramEndDate, paramEndDate, true)
+		if retEnd.IsNotOK() {
+			r.AssignErrorFrom(retEnd)
+			break
+		}
+
+		if stBegin != nil && stEnd != nil && stEnd.Before(*stBegin) {
+			r.SetError(ERR_FAIL, paramEndName+"不能早于"+paramBeignName)
+			break
+		}
+		// 除了 SQL 语句的 where 条件
+		if stEnd == nil {
+			if stBegin != nil {
+				w.Add(paramFieldName+" >= ?", paramBeginDate+" 00:00:00")
+			}
+		} else {
+			if stBegin != nil {
+				w.Add(paramFieldName+" between ? and ?", paramBeginDate+" 00:00:00", paramEndDate+" 23:59:59")
+			} else {
+				w.Add(paramFieldName+" <= ?", paramEndDate+" 23:59:59")
+			}
+		}
+	}
+	return r
+}
+
+// 日期时间范围参数解析(时间戳) 字段的类型是 整数秒
 //
 //	 注意：开始时间和结束时间存在的时候：paramFieldName between ? and ?
 //			都不存在的时候：不会生成 where 条件
@@ -182,7 +231,7 @@ func (w *GormWhere) AddDateScope(paramFieldName string, paramBeignName string, p
 //	     仅仅存在结束时间的时候：paramFieldName <= ?
 
 //	SQL 语句的 where 条件的是时间戳 64位整型
-//	- paramFieldName: 时间字段名称
+//	- paramFieldName: 时间字段名称 字段的类型是 整数秒
 //	- paramBeignName: 开始时间参数名称
 //	- paramBeginDateTime: 开始时间字符串 (格式：YYYY-MM-DD HH:MM:SS)
 //	- paramEndName: 结束时间参数名称
@@ -223,7 +272,7 @@ func (w *GormWhere) AddDateTimeScopeTimestamp(paramFieldName string, paramBeignN
 	return r
 }
 
-// 日期范围参数解析()
+// 日期范围参数解析() 字段的类型是 整数秒
 //
 //	  时间戳的单位是秒
 //		 注意：开始时间和结束时间存在的时候：paramFieldName between ? and ?
@@ -231,7 +280,7 @@ func (w *GormWhere) AddDateTimeScopeTimestamp(paramFieldName string, paramBeignN
 //		     仅仅存在开始时间的时候：paramFieldName >= ?
 //		     仅仅存在结束时间的时候：paramFieldName < ?
 //		SQL 语句的 where 条件的是时间戳 64位整型
-//		- paramFieldName: 时间字段名称
+//		- paramFieldName: 时间字段名称 字段的类型是 整数秒
 //		- paramBeignName: 开始时间参数名称
 //		- paramBeginDate: 开始时间字符串 (格式：YYYY-MM-DD)
 //		- paramEndName: 结束时间参数名称
