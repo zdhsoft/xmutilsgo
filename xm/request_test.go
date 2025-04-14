@@ -1,6 +1,9 @@
 package xm
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func Test_GetRequest(t *testing.T) {
 	url := "https://api.juejin.cn/user_api/v1/user/profile_id"
@@ -23,7 +26,7 @@ func Test_GetRequest(t *testing.T) {
 		return
 	}
 	t.Log("URL:" + url + "?" + jsonStr.Encode())
-	respBody, err := GetRequestByOrigin(url, nil, jsonStr.Encode())
+	respBody, err := GetRequestByOrigin(url, nil, jsonStr.Encode(), 30*time.Second)
 	if err != nil {
 		t.Error("GetRequestByOrigin error:" + err.Error())
 		return

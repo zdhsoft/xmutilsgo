@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+// DefaultHTTPTimeout 默认的 HTTP 请求超时时间
+const DefaultHTTPTimeout = 60 * time.Second
+
 // structToQueryParams 将带有json标记的结构体转换为url.Values
 //   - paramInput 输入结构指或结构体指针
 //   - paramAllocOmitempty=true时处理omitempty标记，否则忽略改标记
@@ -184,8 +187,9 @@ func valueToString(paramValue reflect.Value) (string, error) {
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
 //   - paramBody 已经要发送的 JSON 数据，[]byte 类型
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
 //   - 返回值：响应数据，[]byte 类型
-func PostRequestByOrigin(paramURL string, paramHeaders map[string]string, paramBody []byte) ([]byte, error) {
+func PostRequestByOrigin(paramURL string, paramHeaders map[string]string, paramBody []byte, paramTimeout time.Duration) ([]byte, error) {
 	// 创建一个新的 POST 请求
 	req, err := http.NewRequest("POST", paramURL, bytes.NewBuffer(paramBody))
 	if err != nil {
@@ -198,8 +202,15 @@ func PostRequestByOrigin(paramURL string, paramHeaders map[string]string, paramB
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	// 设置超时时间
+	if paramTimeout == 0 {
+		paramTimeout = DefaultHTTPTimeout
+	}
+	client := &http.Client{
+		Timeout: paramTimeout,
+	}
+
 	// 执行请求
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %v", err)
@@ -218,8 +229,9 @@ func PostRequestByOrigin(paramURL string, paramHeaders map[string]string, paramB
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
 //   - paramQueryString ?后面的查询参数，string 类型
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
 //   - 返回值：响应数据，[]byte 类型
-func GetRequestByOrigin(paramURL string, paramHeaders map[string]string, paramQueryString string) ([]byte, error) {
+func GetRequestByOrigin(paramURL string, paramHeaders map[string]string, paramQueryString string, paramTimeout time.Duration) ([]byte, error) {
 	// 构造完整的 URL，包含查询参数
 	finalURL := joinGetParamsString(paramURL, paramQueryString)
 	// 创建一个新的 GET 请求
@@ -233,8 +245,15 @@ func GetRequestByOrigin(paramURL string, paramHeaders map[string]string, paramQu
 		req.Header.Set(key, value)
 	}
 
+	// 设置超时时间
+	if paramTimeout == 0 {
+		paramTimeout = DefaultHTTPTimeout
+	}
+	client := &http.Client{
+		Timeout: paramTimeout,
+	}
+
 	// 执行请求
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %v", err)
@@ -249,301 +268,165 @@ func GetRequestByOrigin(paramURL string, paramHeaders map[string]string, paramQu
 	return respBody, nil
 }
 
-// PostRequestBy2Map 发起一个 POST 请求，上传 JSON 数据并返回 JSON 响应
+// PostRequestBy2Map POST 请求，上传 JSON 数据并返回 map 响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - paramBody 请求体，interface{} 类型，可以是结构体、map[string]interface{} 等
+//   - paramBody 要发送的 JSON 数据，任意类型，会被转换为 JSON
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
 //   - 返回值：响应数据，map[string]interface{} 类型
-func PostRequestBy2Map(paramURL string, paramHeaders map[string]string, paramBody interface{}) (map[string]interface{}, error) {
-	// 将 body 转换成 JSON 格式
+func PostRequestBy2Map(paramURL string, paramHeaders map[string]string, paramBody interface{}, paramTimeout time.Duration) (map[string]interface{}, error) {
+	// 将请求体转换为 JSON
 	jsonData, err := json.Marshal(paramBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal body: %v", err)
+		return nil, fmt.Errorf("failed to marshal request body: %v", err)
 	}
 
-	// 创建一个新的 POST 请求
-	req, err := http.NewRequest("POST", paramURL, bytes.NewBuffer(jsonData))
+	// 发送请求
+	respBody, err := PostRequestByOrigin(paramURL, paramHeaders, jsonData, paramTimeout)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return nil, err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	var responseData map[string]interface{}
-	err = json.Unmarshal(respBody, &responseData)
-	if err != nil {
+	// 解析响应
+	var result map[string]interface{}
+	if err := json.Unmarshal(respBody, &result); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
-	return responseData, nil
+	return result, nil
 }
 
-// PostRequestBy2Struct 发起一个 POST 请求，上传 JSON 数据并返回 JSON 响应
+// PostRequestBy2Struct POST 请求，上传 JSON 数据并返回结构体响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - paramBody 请求体，interface{} 类型，可以是结构体、map[string]interface{} 等
-//   - paramReply 响应结构体指针，用于接收 JSON 响应数据
-//   - 返回值：error
-func PostRequestBy2Struct(paramURL string, paramHeaders map[string]string, paramBody interface{}, paramReply interface{}) error {
-	// 将 body 转换成 JSON 格式
+//   - paramBody 要发送的 JSON 数据，任意类型，会被转换为 JSON
+//   - paramReply 响应数据的结构体指针
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
+func PostRequestBy2Struct(paramURL string, paramHeaders map[string]string, paramBody interface{}, paramReply interface{}, paramTimeout time.Duration) error {
+	// 将请求体转换为 JSON
 	jsonData, err := json.Marshal(paramBody)
 	if err != nil {
-		return fmt.Errorf("failed to marshal body: %v", err)
+		return fmt.Errorf("failed to marshal request body: %v", err)
 	}
 
-	// 创建一个新的 POST 请求
-	req, err := http.NewRequest("POST", paramURL, bytes.NewBuffer(jsonData))
+	// 发送请求
+	respBody, err := PostRequestByOrigin(paramURL, paramHeaders, jsonData, paramTimeout)
 	if err != nil {
-		return fmt.Errorf("failed to create request: %v", err)
+		return err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	err = json.Unmarshal(respBody, paramReply)
-	if err != nil {
+	// 解析响应
+	if err := json.Unmarshal(respBody, paramReply); err != nil {
 		return fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
 	return nil
 }
 
-// GetRequestByMap2Map 发起一个 GET 请求，URL 上行数据是查询参数，返回 JSON 响应
+// GetRequestByMap2Map GET 请求，使用 map 参数并返回 map 响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - params 请求体，map[string]interface{} 类型
+//   - params 查询参数，map[string]interface{} 类型
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
 //   - 返回值：响应数据，map[string]interface{} 类型
-func GetRequestByMap2Map(paramURL string, paramHeaders map[string]string, params map[string]interface{}) (map[string]interface{}, error) {
-	// 构建查询参数
-	queryParams := url.Values{}
+func GetRequestByMap2Map(paramURL string, paramHeaders map[string]string, params map[string]interface{}, paramTimeout time.Duration) (map[string]interface{}, error) {
+	// 将参数转换为查询字符串
+	values := url.Values{}
 	for key, value := range params {
-		strValue, err := valueToString(reflect.ValueOf(value))
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert value to string: %v", err)
-		}
-		queryParams.Add(key, strValue)
+		values.Add(key, fmt.Sprintf("%v", value))
 	}
+	queryString := values.Encode()
 
-	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
-	// 创建一个新的 GET 请求
-	req, err := http.NewRequest("GET", finalURL, nil)
+	// 发送请求
+	respBody, err := GetRequestByOrigin(paramURL, paramHeaders, queryString, paramTimeout)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return nil, err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	var responseData map[string]interface{}
-	err = json.Unmarshal(respBody, &responseData)
-	if err != nil {
+	// 解析响应
+	var result map[string]interface{}
+	if err := json.Unmarshal(respBody, &result); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
-	return responseData, nil
+	return result, nil
 }
 
-// GetRequestByMap2Struct 发起一个 GET 请求，URL 上行数据是查询参数，返回 JSON 响应
+// GetRequestByMap2Struct GET 请求，使用 map 参数并返回结构体响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - params 请求体，map[string]interface{} 类型
-//   - paramReply 响应结构体指针，用于接收 JSON 响应数据
-//   - 返回值：error
-func GetRequestByMap2Struct(paramURL string, paramHeaders map[string]string, params map[string]string, paramReply interface{}) error {
-	// 构建查询参数
-	queryParams := url.Values{}
+//   - params 查询参数，map[string]string 类型
+//   - paramReply 响应数据的结构体指针
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
+func GetRequestByMap2Struct(paramURL string, paramHeaders map[string]string, params map[string]string, paramReply interface{}, paramTimeout time.Duration) error {
+	// 将参数转换为查询字符串
+	values := url.Values{}
 	for key, value := range params {
-		queryParams.Add(key, value)
+		values.Add(key, value)
 	}
+	queryString := values.Encode()
 
-	// 构造完整的 URL，包含查询参数
-	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
-
-	// 创建一个新的 GET 请求
-	req, err := http.NewRequest("GET", finalURL, nil)
+	// 发送请求
+	respBody, err := GetRequestByOrigin(paramURL, paramHeaders, queryString, paramTimeout)
 	if err != nil {
-		return fmt.Errorf("failed to create request: %v", err)
+		return err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	err = json.Unmarshal(respBody, paramReply)
-	if err != nil {
+	// 解析响应
+	if err := json.Unmarshal(respBody, paramReply); err != nil {
 		return fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
 	return nil
 }
 
-// GetRequestByStruct2Map 发起一个 GET 请求，URL 上行数据是查询参数，返回 JSON 响应
+// GetRequestByStruct2Map GET 请求，使用结构体参数并返回 map 响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - params 请求体指针 类型
+//   - params 查询参数，结构体类型
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
 //   - 返回值：响应数据，map[string]interface{} 类型
-func GetRequestByStruct2Map(paramURL string, paramHeaders map[string]string, params interface{}) (map[string]interface{}, error) {
-	// 构建查询参数
-	queryParams, err := StructToQueryParams(params, true)
+func GetRequestByStruct2Map(paramURL string, paramHeaders map[string]string, params interface{}, paramTimeout time.Duration) (map[string]interface{}, error) {
+	// 将结构体转换为查询字符串
+	values, err := StructToQueryParams(params, true)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert struct to query params: %v", err)
 	}
+	queryString := values.Encode()
 
-	// 构造完整的 URL，包含查询参数
-
-	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
-
-	// 创建一个新的 GET 请求
-	req, err := http.NewRequest("GET", finalURL, nil)
+	// 发送请求
+	respBody, err := GetRequestByOrigin(paramURL, paramHeaders, queryString, paramTimeout)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return nil, err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	var responseData map[string]interface{}
-	err = json.Unmarshal(respBody, &responseData)
-	if err != nil {
+	// 解析响应
+	var result map[string]interface{}
+	if err := json.Unmarshal(respBody, &result); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
-	return responseData, nil
+	return result, nil
 }
 
-// GetRequestByStruct2Struct 发起一个 GET 请求，URL 上行数据是查询参数，返回 JSON 响应
+// GetRequestByStruct2Struct GET 请求，使用结构体参数并返回结构体响应
 //   - paramURL 请求 URL 要求是完整路径，如 https://example.com/api/v1/test 或 https://example.com：8080/api/v1/test
 //   - paramHeaders 请求头，map[string]string 类型 无 header 则传 nil
-//   - params 请求体指针 类型
-//   - paramReply 响应结构体指针，用于接收 JSON 响应数据
-//   - 返回值：error
-func GetRequestByStruct2Struct(paramURL string, paramHeaders map[string]string, params interface{}, paramReply interface{}) error {
-	// 构建查询参数
-	queryParams, err := StructToQueryParams(params, true)
+//   - params 查询参数，结构体类型
+//   - paramReply 响应数据的结构体指针
+//   - paramTimeout 请求超时时间，如果为0则使用默认值60秒
+func GetRequestByStruct2Struct(paramURL string, paramHeaders map[string]string, params interface{}, paramReply interface{}, paramTimeout time.Duration) error {
+	// 将结构体转换为查询字符串
+	values, err := StructToQueryParams(params, true)
 	if err != nil {
 		return fmt.Errorf("failed to convert struct to query params: %v", err)
 	}
+	queryString := values.Encode()
 
-	// 构造完整的 URL，包含查询参数
-	finalURL := joinGetParamsString(paramURL, queryParams.Encode())
-
-	// 创建一个新的 GET 请求
-	req, err := http.NewRequest("GET", finalURL, nil)
+	// 发送请求
+	respBody, err := GetRequestByOrigin(paramURL, paramHeaders, queryString, paramTimeout)
 	if err != nil {
-		return fmt.Errorf("failed to create request: %v", err)
+		return err
 	}
 
-	// 设置请求头
-	for key, value := range paramHeaders {
-		req.Header.Set(key, value)
-	}
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应 body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	// 解析 JSON 响应
-	err = json.Unmarshal(respBody, paramReply)
-	if err != nil {
+	// 解析响应
+	if err := json.Unmarshal(respBody, paramReply); err != nil {
 		return fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
 	return nil
 }
