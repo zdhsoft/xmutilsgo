@@ -21,6 +21,12 @@ type Integer interface {
 	SignedInteger | UnsignedInteger
 }
 
+// Float 所有浮点数类型
+type Float interface {
+	~float32 | ~float64
+}
+
+
 // Int2String /*
 func Int2String[T SignedInteger](paramValue T) string {
 	v := int64(paramValue)
