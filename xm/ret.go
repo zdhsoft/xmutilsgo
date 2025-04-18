@@ -33,6 +33,10 @@ func (r *BaseRet) GetRet() int {
 	return r.Ret
 }
 
+func (r *BaseRet) GetRet32() int32 {
+	return int32(r.Ret)
+}
+
 // GetRetStr 取返回码字符串值
 func (r *BaseRet) GetRetStr() string {
 	return strconv.Itoa(r.Ret)
