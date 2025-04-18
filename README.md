@@ -29,8 +29,8 @@ go get github.com/zdhsoft/xmutilsgo
 
 -   v1.0.9 增加比较相关的函数
     -   Cmp 比较类的模板函数，支持所有整数，浮点数和字符串
-    -   CmdTime 比较时间的函数
-    -   CmdBool 比较 bool 型的函数
+    -   CmpTime 比较时间的函数
+    -   CmpBool 比较 bool 型的函数
 -   v1.0.8 增加了 gorm 的方法
 
     -   AddDateScopeDateTime 增加日期范围条件，被查询的字段是 datetime 类型
