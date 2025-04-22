@@ -1,29 +1,49 @@
 package xm
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestSampleCode(t *testing.T) {
-	sc := &SimpleCode{}
+	sc := NewSampleCodeByMillis()
 	// 示例数据
 	data := []byte("Hello SimpleCode")
-	seed := int(GetNowMillis())
-	fmt.Println("Seed:", seed)
+	seed := sc.GetSeed()
+	// fmt.Println("Seed:", seed)
 	// Encode
-	encoded := sc.Encode(seed, data)
-	fmt.Println("Encoded:", encoded.Data)
+	encoded, err := sc.Encode(data)
+	if err != nil {
+		t.Errorf("Encode error: %v", err)
+	}
+	// fmt.Println("Encoded:", encoded)
 
 	// Decode
-	decoded := sc.Decode(seed, encoded.Data)
-	fmt.Println("Decoded:", string(decoded.Data))
+	sc.SetSeed(seed)
+	decoded, err := sc.Decode(encoded)
+	if err != nil {
+		t.Errorf("Decode error: %v", err)
+	}
+	// fmt.Println("Decoded:", string(decoded))
+
+	if string(decoded) != string(data) {
+		t.Errorf("Decode error: %v", err)
+	}
 
 	// EncodePackage
-	pack := sc.EncodePackage(seed, data)
-	fmt.Println("Package:", pack.Data)
+	sc.SetSeed(91234)
+	pack, err := sc.EncodePackage(data)
+	if err != nil {
+		t.Errorf("EncodePackage error: %v", err)
+	}
+	// fmt.Println("Package:", pack)
 
 	// DecodePackage
-	unpack := sc.DecodePackage(pack.Data)
-	fmt.Println("Unpacked:", string(unpack.Data))
+	unpack, err := sc.DecodePackage(pack)
+	if err != nil {
+		t.Errorf("DecodePackage error: %v", err)
+	}
+	// fmt.Println("Unpacked:", string(unpack))
+	if string(unpack) != string(data) {
+		t.Errorf("DecodePackage error: %v", err)
+	}
 }

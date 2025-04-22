@@ -27,7 +27,7 @@ go get github.com/zdhsoft/xmutilsgo
 
 ## 版本信息
 
--   v1.0.11 增加 samplecode 实现
+-   v1.0.12 增加 samplecode 实现
 -   v1.0.10 增加雪花算法
 
     -   雪花算法实现：
