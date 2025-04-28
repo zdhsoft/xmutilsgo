@@ -135,11 +135,31 @@ func NewBaseRetError(paramRet int, paramMsg string) error {
 	return r
 }
 
+// NewErrorf 创建一个带格式化参数的BaseRet
+func NewErrorf(paramRet int, paramMsg string, args ...any) error {
+	return &BaseRet{
+		Ret: paramRet,
+		Msg: fmt.Sprintf(paramMsg, args...),
+	}
+}
+
+// NewError 创建一个带参数的BaseRet
+func NewError(paramRet int, paramMsg string) error {
+	return &BaseRet{
+		Ret: paramRet,
+		Msg: paramMsg,
+	}
+}
+
 // Error2Ret 将error转换为BaseRet
 func Error2Ret(err error) *BaseRet {
 	if err == nil {
 		return nil
 	}
-	r := err.(*BaseRet)
-	return r
+	r, ok := err.(*BaseRet)
+	if ok {
+		return r
+	} else {
+		return nil
+	}
 }
