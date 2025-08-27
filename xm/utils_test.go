@@ -44,3 +44,20 @@ func Test_CalcMoneyByCent2(t *testing.T) {
 // 		t.Logf("< 0.01 Part: %f\n\n", lessThan)
 // 	}
 // }
+
+func Test_StringSpace(t *testing.T) {
+	s := "hello world"
+	s1 := "hello world\n k l adf"
+	if !HasWhitespace(s) {
+		t.Errorf("HasWhitespace(%s) = false, want true", s)
+	}
+	if RemoveAllWhiteSpace(s) != "helloworld" {
+		t.Errorf("RemoveAllWhiteSpace(%s) = %s, want helloworld", s, RemoveAllWhiteSpace(s))
+	}
+	if !HasWhitespace(s1) {
+		t.Errorf("HasWhitespace(%s) = false, want true", s1)
+	}
+	if RemoveAllWhiteSpace(s1) != "helloworldkladf" {
+		t.Errorf("RemoveAllWhiteSpace(%s) = %s, want helloworldkladf", s1, RemoveAllWhiteSpace(s1))
+	}
+}
