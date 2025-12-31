@@ -39,7 +39,7 @@ func (t *TDateTime) ToBeijing() *TDateTime {
 func (t *TDateTime) SelfToBeijing() *TDateTime {
 	if t.IsUTC() {
 		t.dtTimestamp -= MILLIS_BY_TIMEZONE_BEIJING
-		t.dtType = DT_TYPE_UTC
+		t.dtType = DT_TYPE_BEIJING
 	}
 	return t
 }

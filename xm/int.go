@@ -1,8 +1,10 @@
 package xm
 
 import (
+	crand "crypto/rand"
 	"errors"
-	"math/rand"
+	"math/big"
+	mrand "math/rand"
 	"strconv"
 )
 
@@ -128,9 +130,14 @@ func UInt2StringBasePad[T UnsignedInteger](paramValue T, paramBase int, paramMin
 
 /*
 RandomIntScope 随机一个[paramMinValue, paramMaxValue]之间的整数
+
   - paramMinValue 最小值
   - paramMaxValue 最大值
   - return int 随机值
+
+注意：此函数使用 math/rand，在 Go 1.20+ 中会自动使用随机种子。
+不适用于安全敏感场景（如生成密钥、令牌、密码、验证码等），
+请使用 RandomIntScopeSecure 或 crypto/rand 包。
 */
 func RandomIntScope(paramMinValue int, paramMaxValue int) int {
 	if paramMinValue > paramMaxValue {
@@ -138,7 +145,38 @@ func RandomIntScope(paramMinValue int, paramMaxValue int) int {
 	} else if paramMinValue == paramMaxValue {
 		return paramMinValue
 	}
-	return rand.Intn(paramMaxValue-paramMinValue+1) + paramMinValue
+	return mrand.Intn(paramMaxValue-paramMinValue+1) + paramMinValue
+}
+
+/*
+RandomIntScopeSecure 使用加密安全的随机数生成器，随机一个[paramMinValue, paramMaxValue]之间的整数
+
+  - paramMinValue 最小值
+  - paramMaxValue 最大值
+  - return int 随机值
+  - error 如果随机数生成失败，返回错误
+
+注意：此函数使用 crypto/rand，适用于安全敏感场景
+（如生成密钥、令牌、密码、验证码、会话ID、CSRF令牌等）。
+性能比 RandomIntScope 慢，但提供密码学安全的随机性。
+*/
+func RandomIntScopeSecure(paramMinValue int, paramMaxValue int) (int, error) {
+	if paramMinValue > paramMaxValue {
+		paramMinValue, paramMaxValue = paramMaxValue, paramMinValue
+	} else if paramMinValue == paramMaxValue {
+		return paramMinValue, nil
+	}
+
+	// 计算范围大小
+	rangeSize := int64(paramMaxValue - paramMinValue + 1)
+
+	// 使用 crypto/rand 生成安全的随机数
+	n, err := crand.Int(crand.Reader, big.NewInt(rangeSize))
+	if err != nil {
+		return 0, err
+	}
+
+	return paramMinValue + int(n.Int64()), nil
 }
 
 // ReverseInt64 64位整数，十进制反转

@@ -10,9 +10,12 @@ var (
 	randomStringChars = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 )
 
-// 随机字符串
+// RandomString 随机字符串
 //   - paramLen 字符串长度 (1-10000)
 //   - return string 返回随机字符串
+//
+// 注意：此函数内部使用 RandomIntScope (math/rand)，不适用于安全敏感场景。
+// 如需生成安全的随机字符串（如密钥、令牌等），请使用 crypto/rand 自行实现。
 func RandomString(paramLen int) string {
 	if paramLen <= 0 || paramLen > 10000 {
 		return ""

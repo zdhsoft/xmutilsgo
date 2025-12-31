@@ -290,12 +290,12 @@ func (w *GormWhere) AddDateTimeScopeTimestamp(paramFieldName string, paramBeignN
 func (w *GormWhere) AddDateScopeTimestamp(paramFieldName string, paramBeignName string, paramBeginDate string, paramEndName string, paramEndDate string) *BaseRet {
 	r := NewBaseRet()
 	for range [1]int{} {
-		stBegin, retBegin := ParamDateCheck(paramBeginDate, paramEndDate, true)
+		stBegin, retBegin := ParamDateCheck(paramBeignName, paramBeginDate, true)
 		if retBegin.IsNotOK() {
 			r.AssignErrorFrom(retBegin)
 			break
 		}
-		stEnd, retEnd := ParamDateCheck(paramBeginDate, paramEndDate, true)
+		stEnd, retEnd := ParamDateCheck(paramEndName, paramEndDate, true)
 		if retEnd.IsNotOK() {
 			r.AssignErrorFrom(retEnd)
 			break
